@@ -37,6 +37,7 @@
                 そうでない学生は、<a href="https://docs.google.com/document/d/1w2PIJWuufivbb-WOe1eFZUPyWVSGQy_JyRmxqyQvEVc/edit?usp=sharing">こちら</a>
                 の<font color = "red">②だけ</font>を実行してください。
                 <font color = "red">デスクトップにtkExporter for 3dsMaxのショーットカットが作成されていることを確認してください。</font>
+                <p><img src="sprite/action1/7.png" width="300" height="300" alt="tkExporter ショートカット"></p>
             </p>
 
             <p>
@@ -51,12 +52,17 @@
                 </p>
                 ゲームパッドの左スティックで移動、右スティックでカメラの回転、それぞれA、X、Yボタンでプレイヤーが何らかの行動をすることを確認してください。
             </p>
-
+            <li>
+                <h2>
+                    <p>1.2 EnemyとBossの配置</p>
+                </h2>
+            </li>
             <p>
                 ステージにはプレイヤーと背景しか配置されていなかったと思います。これから3DSMAXを使用して、エネミー、レバー、ドアなどを配置して行きましょう。
                 それでは、<font color = "red"></font>Assets/stage.max</font>を開いてください。
                 <p>
                     <img src="sprite/action1/4.png" width="640" height="360" alt="stage.max">
+                </p>
                 </p>
                 <p>
                     そうすると、以下のように背景とhuman(プレイヤー)が配置されていると思います。
@@ -67,6 +73,202 @@
                         <img src="sprite/action1/6.png" width="640" height="360" alt="stage.max">
                     </p>
                 </p>
+                    <p>先ほどのプレイヤーと背景の配置は、このmaxデータを参照して配置しています。Game.hとGame.cppを見てみましょう。</p>
+                    <p>
+                        Game.h
+                        <pre><code>
+                            <div style="background-color: black; padding: 4px;">
+                                <font size="5" color="white">
+    //////////////////////////////////////
+    // メンバ変数。
+    //////////////////////////////////////
+private:
+    LevelRender             m_levelRender;                  //レベル。
+    Player*                 m_player = nullptr;             //プレイヤー。
+                            </div>
+                        </font></code></pre>
+                        Game.cpp
+                        <pre><code>
+                            <div style="background-color: black; padding: 4px;">
+                                <font size="5" color="white">
+    //レベルを構築する。
+    m_levelRender.Init("Assets/level3D/level.tkl",
+        [&](LevelObjectData& objData)
+        {
+        //名前がhumanだったら。
+        if(objData.EqualObjectName(L"human") == true)
+        {
+            //プレイヤーのオブジェクトを作成する。
+            m_player = NewGO&lt;Player&gt;(0,"player");
+            //座標を設定する。
+            m_player->SetPosition(objData.position);
+            //回転を設定する。
+            m_player->SetRotation(objData.rotation);
+            //trueにすると、レベルの方でモデルが読み込まれます。
+            return true; 
+        }
+        //名前がbackgroundだったら。
+        else if(objData.EqualObjectName(L"background") == true)
+        {
+            //背景オブジェクトを作成する。
+            m_background = NewGO&lt;BackGround&gt;(0, "background");
+            //座標を設定する。
+            m_background->SetPosition(objData.position);
+            //大きさを設定する。
+            m_background->SetScale(objData.scale);
+            //回転を設定する。
+            m_background->SetRotation(objData.rotation);
+            return true;
+        }
+        return true;
+    });
+                        </div>
+                        </font>
+                        </code></pre>
+                        <font color="red">Game.hで「LevelRender」というクラスの変数を宣言して、
+                            Game.cppで先ほどのmaxの配置データを読み込んで、オブジェクトを配置しています。
+                        </font>
+                        それでは実際に、maxでオブジェクトを配置してみましょう。
+                    </p>
+                    <p>
+                        では3dsmaxに戻って、右側の「ユーティリティ」から「MAXScript」→「スクリプトを起動」から、
+                        デスクトップの「tkExporterのショートカット」を選択してください。
+                        <p><img src="sprite/action1/8.png" width="300" height="300" alt="ユーティリティ">
+                        <img src="sprite/action1/9.png" width="300" height="300" alt="maxscript">
+                        <img src="sprite/action1/10.png" width="300" height="300" alt="スクリプトを起動">
+                        <img src="sprite/action1/11.png" width="400" height="500" alt="選択"></p>
+                    </p>
+                    <p>
+                        そうすると、「ユーティリティ」に下記のような項目が追加されたと思います。
+                        <p>
+                            <img src="sprite/action1/12.png" width="400" height="500" alt="tkExporter">
+                        </p>
+                        では、始めに「Enemy」を配置してみましょう。
+                    </p>
+                    <p>
+                        先ほどの「tkExporter」の項目から、「Level」の「Load Object」からAssets/modelData/enemyのenemy.fbxを選択してください。
+                        <p>
+                            <img src="sprite/action1/13.png" width="250" height="500" alt="Load object">
+                            <img src="sprite/action1/14.png" width="600" height="250" alt="enemy.fbx">
+                        </p>
+                        そうすると、このように「Enemy」が読み込まれたと思います。
+                        <p>
+                            <img src="sprite/action1/15.png" width="500" height="400" alt="enemy">
+                        </p>
+                        では、「Enemy」をこの辺りの位置に移動させてみましょう。
+                        <p>
+                            <img src="sprite/action1/16.png" width="800" height="450" alt="enemy">
+                        </p> 
+                        出来ましたら、次は配置データを保存しましょう。
+                        「Level」の「Save Level」より、Assets/level3Dのlevel.tklを選択して保存してください。
+                        <p>
+                            <img src="sprite/action1/17.png" width="350" height="500" alt="Save level">
+                            <img src="sprite/action1/18.png" width="600" height="150" alt="level.tkm">
+                        </p>
+                        この操作により、「Enemy」の配置データが、「level.tkl」に保存されました。
+                        次は、C++側でこの配置データを読み込んで見ましょう。
+                        <p>
+                            それではVisual Studioに戻って、Game.cppを開いてください。先ほど、配置データを読み込んでいるといった箇所に、
+                            「Enemy」を配置するコードを追加してください。
+                        </p>
+                            <p>Game.cpp</p>
+                            <pre><code>
+                                <div style="background-color: black; padding: 4px;">
+                                    <font size="5" color="white">
+        //レベルを構築する。
+        m_levelRender.Init("Assets/level3D/level.tkl",
+            [&](LevelObjectData& objData)
+            {
+            //名前がhumanだったら。
+            if(objData.EqualObjectName(L"human") == true)
+            {
+                //プレイヤーのオブジェクトを作成する。
+                m_player = NewGO&lt;Player&gt;(0,"player");
+                //座標を設定する。
+                m_player->SetPosition(objData.position);
+                //回転を設定する。
+                m_player->SetRotation(objData.rotation);
+                return true; 
+            }
+            //名前がbackgroundだったら。
+            else if(objData.EqualObjectName(L"background") == true)
+            {
+                //背景オブジェクトを作成する。
+                m_background = NewGO&lt;BackGround&gt;(0, "background");
+                //座標を設定する。
+                m_background->SetPosition(objData.position);
+                //大きさを設定する。
+                m_background->SetScale(objData.scale);
+                //回転を設定する。
+                m_background->SetRotation(objData.rotation);
+                return true;
+            }
+            <font color="red">
+            //名前がenemyだったら。
+            else if(objData.EqualObjectName(L"enemy") == true)
+            {
+                //エネミーのオブジェクトを作成する。
+                Enemy* enemy = NewGO&lt;Enemy&gt;(0, "enemy");
+                //座標を設定する。
+                enemy->SetPosition(objData.position);
+                //回転を設定する。
+                enemy->SetRotation(objData.rotation);
+                //HPを5に設定する。
+                enemy->SetHP(5);
+                //作成したエネミーの和を数えたいので、+1する。
+                m_numEnemy++;
+                return true;
+            }
+        </font>
+            return true;
+        });
+                            </div>
+                            </font>
+                            </code></pre>
+                        </p>
+                        <p>
+                            できたらF5キーで実行してみてください。
+                            下記のように「Enemy」が表示されていれば、成功です。
+                            <p>
+                                <img src="sprite/action1/19.png" width="700" height="430" alt="enemy">
+                            </p>
+                        </p>
+                        <p>
+                            では次に、複数の「Enemy」と「Boss」を配置してみましょう。
+                            3ds Maxに戻って、先ほど配置した「Enemy」を選択してください。
+                            <p>
+                                <img src="sprite/action1/20.png" width="570" height="400" alt="enemy">
+                            </p>
+                            そうしたら、「Level」の「Copy Object」を選択してください。
+                            そうすると、「Enemy」が2つに増えていると思います。
+                            <p>
+                                <img src="sprite/action1/21.png" width="370" height="350" alt="enemy">
+                                <img src="sprite/action1/22.png" width="530" height="330" alt="enemy">
+                            </p>
+                            この機能を利用して、「Enemy」を複数配置してみましょう。
+                            <p>
+                                <img src="sprite/action1/23.png" width="700" height="400" alt="enemys">
+                            </p>
+                            配置出来たら、先ほどと同じように「level.tkl」に保存してください。
+                            保存出来たら、Visual Studioに戻って、F5で実行してみてください。
+                            以下のように、「Enemy」が配置されているでしょうか？
+                            <p>
+                                <img src="sprite/action1/24.png" width="700" height="400" alt="enemys">
+                            </p>
+                            ところで、先ほど配置したエネミーですが、皆同じ方向を向いていて不自然だと思いませんか？
+                            3ds Maxで「Enemy」の方向を修正してみましょう。
+                            では、3ds Maxの「回転ツール」を選択して、「Enemy」を回転させましょう。
+                            <p>
+                                <img src="sprite/action1/25.png" width="300" height="200" alt="回転">
+                            </p>                        
+                        </p>
+                    
+
+                    
+
+               
+
+                
             </p>
 
        </ul>

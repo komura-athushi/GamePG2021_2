@@ -42,7 +42,9 @@ bool Game::Start()
 
 
 	//レベルを構築する。
-	m_levelRender.Init("Assets/level3D/level.tkl", [&](LevelObjectData& objData) {
+	m_levelRender.Init("Assets/level3D/level.tkl", 
+		[&](LevelObjectData& objData) 
+		{
 		//名前がhumanだったら。
 		if (objData.EqualObjectName(L"human") == true) {
 			//プレイヤーのオブジェクトを作成する。
