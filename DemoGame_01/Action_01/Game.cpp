@@ -83,6 +83,22 @@ bool Game::Start()
 			m_numEnemy++;
 			return true;
 		}
+		//名前がbossだったら。
+		else if (objData.EqualObjectName(L"boss") == true)
+		{
+			//ボスのオブジェクトを作成する。
+			Boss* boss = NewGO<Boss>(0, "boss");
+			//座標を設定する。
+			boss->SetPosition(objData.position);
+			//回転を設定する。
+			boss->SetRotation(objData.rotation);
+			//ボスのHPは高めに設定する。
+			//HPを15に設定する。
+			boss->SetHP(15);
+			//作成したエネミーの和を数えたいので、+1する。
+			m_numEnemy++;
+			return true;
+		}
 		return true;
 	});
 

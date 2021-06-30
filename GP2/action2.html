@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html lang="jp">
+    <head>
+        <title>
+            Action_01
+        </title>
+        <meta charset="UTF-8">    
+    </head>
+
+    <body>
+        <h1>
+            <a href="index.html">トップ</a>
+        </h1>
+
+        <h1>
+            Action_01 オブジェクトの配置＿後篇(レベル)
+        </h1>
+        <p>
+            Action_00では、「Enemy」や「Boss」を配置しました。
+            Action_01では、「レバー」や「ドア」を配置していきましょう。 
+        </p>
+
+       <ul>
+           <li>
+               <h2>
+                   <p>2.1 レバーの設置</p>
+               </h2>
+           </li>
+
+           <p>
+               では、Action_00の復習も兼ねて、「レバー」を設置してきましょう。
+               Assets/level3D/のstage.maxを開いてください。
+               <p>
+                <img src="sprite/action2/1.png" width="640" height="360" alt="stage.max">
+               </p>
+               次に、「ユーティリティ」→「MAXScript」→「スクリプトを起動」から「tkExporter」を選択してください。
+               そして、Levelの「Load Object」からAssets/modelData/leverのlever.fbxを読み込んでください。
+               <p>
+                <img src="sprite/action2/2.png" width="400" height="100" alt="lever.fbx">
+               </p>
+               それでは、ステージのこの辺りに「レバー」を配置してみましょう。
+               大きさや向きも調整してみてください。
+               <p>
+                <img src="sprite/action2/3.png" width="500" height="350" alt="lever1">
+                <img src="sprite/action2/4.png" width="600" height="400" alt="lever2">
+               </p>
+               <br>配置できたら、「level.tkl」に保存をしましょう。
+               <br>続いて、Game.slnからVisual Studioのプロジェクトを立ち上げてください。
+               そして、「Game.cpp」に下記の<font color="red">赤い箇所</font>のコードを追加してください。
+               <p>Game.cpp</p>
+               <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+    //名前がenemyだったら。
+    else if(objData.EqualObjectName(L"enemy") == true)
+    {
+        //エネミーのオブジェクトを作成する。
+        Enemy* enemy = NewGO&lt;Enemy&gt;(0, "enemy");
+        //座標を設定する。
+        enemy->SetPosition(objData.position);
+        //回転を設定する。
+        enemy->SetRotation(objData.rotation);
+        //HPを5に設定する。
+        enemy->SetHP(5);
+        //作成したエネミーの和を数えたいので、+1する。
+        m_numEnemy++;
+        return true;
+    }
+    //名前がbossだったら。
+    else if(objData.EqualObjectName(L"boss") == true)
+    {
+        //ボスのオブジェクトを作成する。
+        Boss* boss = NewGO&lt;Boss&gt;(0, "boss");
+        //座標を設定する。
+        boss->SetPosition(objData.position);
+        //回転を設定する。
+        boss->SetRotation(objData.rotation);
+        //ボスのHPは高めに設定する。
+        //HPを15に設定する。
+        boss->SetHP(15);
+        //作成したエネミーの和を数えたいので、+1する。
+        m_numEnemy++;
+        return true;
+    }
+    <font color="red">
+    //名前がleverだったら。
+    else if(objData.EqualObjectName(L"lever") == true)
+    {
+        //レバーのオブジェクトを作成する。
+        auto lever = NewGO&lt;Lever&gt;(0,"lever");
+        //座標を設定する。
+        lever->SetPosition(objData.position);
+        //大きさを設定する。
+        lever->SetScale(objData.scale); 
+        //回転を設定する。
+        lever->SetRotation(objData.rotation);
+        //レバーの配列に作成したオブジェクトを加える。
+        m_leverVector.push_back(lever);
+        return true;
+    } 
+    </font>
+    return true;
+ });
+                    </div>
+                </font>
+                </code></pre>
+
+
+               出来たら、F5キーで実行してみてください。
+               このようにレバーが配置されているでしょうか。
+               <p>
+                <img src="sprite/action2/5.png" width="600" height="450" alt="lever">
+               </p>
+           </p>
+           <li>
+            <h2>
+                <p>2.2 ドアの設置</p>
+            </h2>
+        </li>
+        <p>
+            続いて、「ドア」の設置をしていきましょう。
+            「レバー」と同じように、Assets/modelData/doorのdoor.fbxを読み込んで、このように配置してください。
+            <br>ドアの向きや大きさに注意してください。
+            <p>
+                <img src="sprite/action2/6.png" width="400" height="100" alt="door">
+                <p>
+                    <img src="sprite/action2/7.png" width="500" height="350" alt="door1">
+                    <img src="sprite/action2/8.png" width="500" height="350" alt="door2">
+                    
+                </p>
+            </p>
+            次に、C++に「ドア」を配置するコードを追加していきます。
+            Visual Studioに戻って、下記のコードを追加してください。
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+            
+
+    //名前がbossだったら。
+    else if(objData.EqualObjectName(L"boss") == true)
+    {
+        //ボスのオブジェクトを作成する。
+        Boss* boss = NewGO&lt;Boss&gt;(0, "boss");
+        //座標を設定する。
+        boss->SetPosition(objData.position);
+        //回転を設定する。
+        boss->SetRotation(objData.rotation);
+        //ボスのHPは高めに設定する。
+        //HPを15に設定する。
+        boss->SetHP(15);
+        //作成したエネミーの和を数えたいので、+1する。
+        m_numEnemy++;
+        return true;
+    }
+    //名前がleverだったら。
+    else if(objData.EqualObjectName(L"lever") == true)
+    {
+        //レバーのオブジェクトを作成する。
+        auto lever = NewGO&lt;Lever&gt;(0,"lever");
+        //座標を設定する。
+        lever->SetPosition(objData.position);
+        //大きさを設定する。
+        lever->SetScale(objData.scale); 
+        //回転を設定する。
+        lever->SetRotation(objData.rotation);
+        //レバーの配列に作成したオブジェクトを加える。
+        m_leverVector.push_back(lever);
+        return true;
+    } 
+    <font color="red">
+    //名前がdoorだったら。
+    else if(objData.EqualObjectName(L"door") == true)
+    {
+        //ドアのオブジェクトを作成する。
+        auto door = NewGO&lt;Door&gt;(0, "door");
+        //座標を設定する。
+        door->SetPosition(objData.position);
+        //大きさを設定する。
+        door->SetScale(objData.scale);
+        //回転を設定する。
+        door->SetRotation(objData.rotation);
+        //ドアの配列に作成したオブジェクトを加える。
+        m_doorVector.push_back(door);
+    }    
+    </font>
+    return true;
+});
+                            </div>
+                        </font>
+                        </code></pre>
+                        
+                        出来たら、F5キーで実行してみてください。
+                        このように「ドア」が配置されていればおkです。
+                        <p>
+                            <img src="sprite/action2/9.png" width="550" height="350" alt="door">
+                        </p>
+                        ここまで出来たら、一旦「stage.max」を保存しておきましょう。
+        </p>
+
+        <li>
+            <h2>
+                <p>2.3 レバーとドアの紐付け</p>
+            </h2>
+        </li>
+
+        <p>
+            さて、これでゲームに必要なオブジェクトの配置ができました。
+            しかし、1つ問題があります。
+            <a href="https://youtu.be/AGr3d1-wcCQ">完成品の動画</a>を視聴すればわかると思いますが、
+            「レバー」が押されたり引いたりしたら、「ドア」が開いたり閉まったりするような仕様になっています。
+            「レバー」や「ドア」の開閉の実装は後々行っていくのですが、「レバー」が何かしらのアクションを「ドア」にすることで、「ドア」の開閉が行われるような実装になっています。
+            しかし、このままでは「レバー」はどの「ドア」にアクションをすればいいのかわかりません！
+            <p>
+                <p><img src="sprite/action2/10.png" width="500" height="250" alt="カリオストロを"></p>
+                <p><img src="sprite/action2/11.png" width="500" height="600" alt="すこれ"></p>
+            </p>
+            そのため、「レバー」と「ドア」を紐付ける必要があります。
+            <p>
+                <p><img src="sprite/action2/12.png" width="400" height="400" alt="ダイワスカーレットをすこれ"></p>
+            </p>
+            では、どのように「紐付け」ていけばいいのでしょうか？
+            「tkExporter」は、「座標」、「回転」、「拡大率」を出力できるといいました。実は他に出力できるデータが存在して、それが「番号」です。
+            何の「番号」かというと、<font color="red">「3ds Maxで設定した名前の@の後の数字」</font>です。
+            <p>
+                <p><img src="sprite/action2/13.png" width="400" height="400" alt="ダイワスカーレットをすこれ"></p>    
+            </p>
+            この「番号」を使用して、「紐付け」を行えば上手くいけそうです。
+            <p>
+                <p><img src="sprite/action2/14.png" width="400" height="400" alt="ダイワスカーレットをすこれ"></p>    
+            </p>
+            それでは、3ds Maxを開いて、「レバー」と「ドア」の名前を変更しましょう。
+            まず、スタート地点近くの「レバー」と「ドア」の名前はこのように変更してください。
+            <p>
+                <img src="sprite/action2/15.png" width="590" height="350" alt="ダイワスカーレットをすこれ">
+                <img src="sprite/action2/16.png" width="300" height="30" alt="ダイワスカーレットをすこれ">
+                <img src="sprite/action2/17.png" width="300" height="30" alt="ダイワスカーレットをすこれ">
+            </p>
+            続いて、中間地点にある「レバー」と「ドア」の名前を変更してください。
+            <p>
+                <img src="sprite/action2/18.png" width="590" height="350" alt="ダイワスカーレットをすこれ">
+                <img src="sprite/action2/19.png" width="300" height="30" alt="ダイワスカーレットをすこれ">
+                <img src="sprite/action2/20.png" width="300" height="30" alt="ダイワスカーレットをすこれ">
+            </p>
+            最後に、ボス部屋付近にある「レバー」と「ドア」の名前を変更してください。
+            <p>
+                <img src="sprite/action2/21.png" width="590" height="350" alt="ダイワスカーレットをすこれ">
+                <img src="sprite/action2/22.png" width="320" height="30" alt="ダイワスカーレットをすこれ">
+                <img src="sprite/action2/23.png" width="340" height="30" alt="ダイワスカーレットをすこれ">
+            </p>
+            できたら、「level.tkl」と「stage.max」を保存してください。
+            これで、3ds Max側の操作は終了です。
+
+            <br>次に、Visual Studioに戻って、コードの追加修正を行いましょう。
+            <br>今までは、オブジェクトの名前の判定に「EqualObjectName関数」を使用していましたが、
+            今回は「ForwardMatchName関数」を使用します。
+            両者の違いは以下の通りです。
+
+
+        </p>
+
+
+
+        </ul>
+
+           

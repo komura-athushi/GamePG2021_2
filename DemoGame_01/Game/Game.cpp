@@ -113,7 +113,8 @@ bool Game::Start()
 			return true;
 		}
 		//名前がleverだったら。
-		else if (objData.ForwardMatchName(L"lever") == true) {
+		else if (objData.ForwardMatchName(L"lever") == true) 
+		{
 			//レバーのオブジェクトを作成する。
 			auto lever = NewGO<Lever>(0, "lever");
 			//座標を設定する。

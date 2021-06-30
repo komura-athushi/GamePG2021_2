@@ -3,7 +3,7 @@
 <html lang="jp">
     <head>
         <title>
-            1.オブジェクトの配置(レベル)
+            Action_00 オブジェクトの配置(レベル)
         </title>
         <meta charset="UTF-8">    
     </head>
@@ -14,7 +14,7 @@
         </h1>
 
         <h1>
-            1.オブジェクトの配置(レベル)
+            Action_00 オブジェクトの配置＿前編(レベル)
         </h1>
 
        <ul>
@@ -42,6 +42,7 @@
                 の<font color = "red">②だけ</font>を実行してください。
                 <font color = "red">デスクトップにtkExporter for 3dsMaxのショーットカットが作成されていることを確認してください。</font>
                 <p><img src="sprite/action1/7.png" width="300" height="300" alt="tkExporter ショートカット"></p>
+                このtkExporterを使用して、3ds Maxの配置データを出力します。
             </p>
 
             <p>
@@ -58,11 +59,28 @@
             </p>
             <li>
                 <h2>
-                    <p>1.2 EnemyとBossの配置</p>
+                    <p>1.2 レベルとは</p>
                 </h2>
             </li>
             <p>
-                ステージにはプレイヤーと背景しか配置されていなかったと思います。これから3DSMAXを使用して、エネミー、レバー、ドアなどを配置して行きましょう。
+                早速オブジェクトの配置をしていきたい所ですが、その前にレベルについて説明します。
+                <br>
+                <font color="red">「レベル」とは、「STAGE」や「WAVE」、「SECTION」などの1つの「面」のことを言います。</font>
+            
+                具体例を挙げますと、スーパーマリオブラザーズの「ワールド1-1」などです。 
+                <br><font color="red">さらに、キャラクターが動き回る「フィールド」や、キャラクターや敵の「配置」をするなど、レベルを作り上げる作業のことを、
+                「レベルデザイン」と言います。</font>
+                日本ではあまり馴染みがありませんが、海外では、この「レベルデザイン」をする専門の職業である、「レベルデザイナー」という業種が存在します。
+                <br><a href="https://news.denfaminicogamer.jp/kikakuthetower/180801">レベルデザインの「レベル」って何だ？──ボックス、メイズ、パーセクにマウンテン!?　ゲームの「面」の呼びかたいろいろ
+                　　やる夫と学ぶ　ゲームが変えた日本語</a>
+            </p>
+            <li>
+                <h2>
+                    <p>1.3 EnemyとBossの配置</p>
+                </h2>
+            </li>
+            <p>
+                では、早速3DSMAXを使用して、エネミー、ボスを配置して行きましょう。
                 それでは、<font color = "red"></font>Assets/stage.max</font>を開いてください。
                 <p>
                     <img src="sprite/action1/4.png" width="640" height="360" alt="stage.max">
@@ -81,8 +99,8 @@
                     <p>
                         Game.h
                         <pre><code>
-                            <div style="background-color: black; padding: 4px;">
-                                <font size="5" color="white">
+                            <div style="background-color: silver; padding: 4px;">
+                                <font size="5" color="black">
     //////////////////////////////////////
     // メンバ変数。
     //////////////////////////////////////
@@ -93,8 +111,8 @@ private:
                         </font></code></pre>
                         Game.cpp
                         <pre><code>
-                            <div style="background-color: black; padding: 4px;">
-                                <font size="5" color="white">
+                            <div style="background-color: silver; padding: 4px;">
+                                <font size="5" color="black">
     //レベルを構築する。
     m_levelRender.Init("Assets/level3D/level.tkl",
         [&](LevelObjectData& objData)
@@ -170,6 +188,7 @@ private:
                             <img src="sprite/action1/18.png" width="600" height="150" alt="level.tkm">
                         </p>
                         この操作により、「Enemy」の配置データが、「level.tkl」に保存されました。
+                        <font color="red">tkExporterを使用すれば、3ds Maxの「座標」や「回転」、「拡大率」などのデータを出力できます。</font>
                         次は、C++側でこの配置データを読み込んで見ましょう。
                         <p>
                             それではVisual Studioに戻って、Game.cppを開いてください。先ほど、配置データを読み込んでいるといった箇所に、
@@ -177,8 +196,8 @@ private:
                         </p>
                             <p>Game.cpp</p>
                             <pre><code>
-                                <div style="background-color: black; padding: 4px;">
-                                    <font size="5" color="white">
+                                <div style="background-color: silver; padding: 4px;">
+                                    <font size="5" color="black">
         //レベルを構築する。
         m_levelRender.Init("Assets/level3D/level.tkl",
             [&](LevelObjectData& objData)
@@ -266,7 +285,113 @@ private:
                                 <img src="sprite/action1/25.png" width="400" height="200" alt="回転">
                                 <img src="sprite/action1/26.png" width="500" height="300" alt="回転">
                                 <img src="sprite/action1/27.png" width="500" height="300" alt="回転">
+                            </p>
+                            出来たら、「level.tkl」に保存して、F5キーで実行してみましょう。
+                            このように「Enemy」の方向が変わっていたらおkです。
+                            <p>
+                                <img src="sprite/action1/28.png" width="700" height="350" alt="回転">
                             </p>                        
+                        </p>
+
+                        <p>
+                            では最後に、「Boss」を配置してみましょう。
+                            3ds Maxに戻って、「Enemy」を読み込んだ時と同じように、Assets/modelData/boss/boss.fbxを読み込んで配置してください。
+                            <p>
+                                <img src="sprite/action1/29.png" width="400" height="100" alt="boss.fbx">
+                                <img src="sprite/action1/30.png" width="500" height="300" alt="boss">
+                            </p>
+                            出来たら、「level.tkl」に保存しましょう。
+                            次に、C++側に「Boss」を配置するコードを追加しましょう。
+                        </p>
+                        <p>Game.cpp</p>
+                        <pre><code>
+                            <div style="background-color: silver; padding: 4px;">
+                                <font size="5" color="black">
+    //レベルを構築する。
+    m_levelRender.Init("Assets/level3D/level.tkl",
+        [&](LevelObjectData& objData)
+        {
+        //名前がhumanだったら。
+        if(objData.EqualObjectName(L"human") == true)
+        {
+            //プレイヤーのオブジェクトを作成する。
+            m_player = NewGO&lt;Player&gt;(0,"player");
+            //座標を設定する。
+            m_player->SetPosition(objData.position);
+            //回転を設定する。
+            m_player->SetRotation(objData.rotation);
+            return true; 
+        }
+        //名前がbackgroundだったら。
+        else if(objData.EqualObjectName(L"background") == true)
+        {
+            //背景オブジェクトを作成する。
+            m_background = NewGO&lt;BackGround&gt;(0, "background");
+            //座標を設定する。
+            m_background->SetPosition(objData.position);
+            //大きさを設定する。
+            m_background->SetScale(objData.scale);
+            //回転を設定する。
+            m_background->SetRotation(objData.rotation);
+            return true;
+        }
+        //名前がenemyだったら。
+        else if(objData.EqualObjectName(L"enemy") == true)
+        {
+            //エネミーのオブジェクトを作成する。
+            Enemy* enemy = NewGO&lt;Enemy&gt;(0, "enemy");
+            //座標を設定する。
+            enemy->SetPosition(objData.position);
+            //回転を設定する。
+            enemy->SetRotation(objData.rotation);
+            //HPを5に設定する。
+            enemy->SetHP(5);
+            //作成したエネミーの和を数えたいので、+1する。
+            m_numEnemy++;
+            return true;
+        }
+        <font color="red">
+        //名前がbossだったら。
+        else if(objData.EqualObjectName(L"boss") == true)
+        {
+                //ボスのオブジェクトを作成する。
+                Boss* boss = NewGO&lt;Boss&gt;(0, "boss");
+                //座標を設定する。
+                boss->SetPosition(objData.position);
+                //回転を設定する。
+                boss->SetRotation(objData.rotation);
+                //ボスのHPは高めに設定する。
+                //HPを15に設定する。
+                boss->SetHP(15);
+                //作成したエネミーの和を数えたいので、+1する。
+                m_numEnemy++;
+                return true;
+        }
+    </font>
+        return true;
+    });
+                        </div>
+                        </font>
+                        </code></pre>
+                    </p>
+
+                           F5キーで実行してみましょう。
+                            このように、透明な敵が表示されているでしょうか。
+                            <p>
+                                <img src="sprite/action1/31.png" width="700" height="380" alt="boss">
+                            </p>
+
+                        </p>
+
+                        <p>
+                            以上でAction_00は終了です。
+                            以上の作業が終わったら、「stage.max」ファイルを保存しておきましょう。
+                            <br>
+                            次は、「レバー」と「ドア」の配置をしていきます。
+                            <p>
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLScyTp835WMH5Wdp1nfojDKdsjx5LcXZ_QVJmZvCzgyvwUMFzA/viewform">評価テストの回答をお願いします。</a>
+                        </p>
+                        </br>
                         </p>
                     
 
