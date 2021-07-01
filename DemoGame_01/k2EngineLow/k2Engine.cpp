@@ -19,6 +19,7 @@ void K2Engine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeight)
 	g_gameTime = &m_gameTime;
 	//ゲームパッドの初期化。
 	for (int i = 0; i < GamePad::CONNECT_PAD_MAX; i++) {
+		m_pad[i].Init(i);
 		g_pad[i] = &m_pad[i];
 	}
 }

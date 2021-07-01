@@ -100,7 +100,7 @@ bool Game::Start()
 			return true;
 		}
 		//名前がleverだったら。
-		else if (objData.EqualObjectName(L"lever") == true)
+		else if (objData.ForwardMatchName(L"lever") == true)
 		{
 			//レバーのオブジェクトを作成する。
 			auto lever = NewGO<Lever>(0, "lever");
@@ -112,10 +112,12 @@ bool Game::Start()
 			lever->SetRotation(objData.rotation);
 			//レバーの配列に作成したオブジェクトを加える。
 			m_leverVector.push_back(lever);
+			//番号を設定する。
+			lever->SetLeverNumber(objData.number);
 			return true;
 		}
 		//名前がdoorだったら。
-		else if (objData.EqualObjectName(L"door") == true)
+		else if (objData.ForwardMatchName(L"door") == true)
 		{
 			//ドアのオブジェクトを作成する。
 			auto door = NewGO<Door>(0, "door");
@@ -127,6 +129,9 @@ bool Game::Start()
 			door->SetRotation(objData.rotation);
 			//ドアの配列に作成したオブジェクトを加える。
 			m_doorVector.push_back(door);
+			//番号を設定する。
+			door->SetDoorNumber(objData.number);
+			return true;
 		}
 
 		return true;

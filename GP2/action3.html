@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html lang="jp">
+    <head>
+        <title>
+            Action_02
+        </title>
+        <meta charset="UTF-8">    
+    </head>
+
+    <body>
+        <h1>
+            <a href="index.html">トップ</a>
+        </h1>
+
+        <h1>
+            Action_02 レバーの実装(当たり判定)
+        </h1>
+
+       <ul>
+           <li>
+               <h2>
+                   <p>3.1 CollisionObject</p>
+               </h2>
+            </li>
+               <p>
+                   k2Engineは日々アップデートされています。
+                   <br>この「CollisionObject」は、最近追加された機能であり、ゲーム制作をしている学生に配布しているエンジンには無い機能になります。
+                   <br>「CollisionObject」は、一言でいうと「PhysicsGhostObject」を使いやすくしたクラスになります。
+                   「PhysicsGhostObject」については、k2EngineのSampleを参照してください。
+                   <br>一言でいうと、通り抜けることができる「Collision(当たり判定)」です。
+                   <br>今回、どういう風に「レバー」を実装するかということですが、まず「プレイヤー」がレバーを押すアニメーションを再生した時に、<font color="red">「CollisionObject」</font>を発生させます。
+                   その<font color="red">「CollisionObject」</font>が<font color="blue">「レバーのCollisionObject」</font>と衝突していたら、レバーのアニメーションを再生させ、ドアの開閉を行います。
+               </p>
+
+            <li>
+                <h2>
+                    <p>3.2 プレイヤー側のCollisionObjectの発生</p>
+                </h2>
+            </li>
+
+            
+
+        </ul>
+
+    </body>
+
+</html>

@@ -132,6 +132,9 @@
             </p>
             次に、C++に「ドア」を配置するコードを追加していきます。
             Visual Studioに戻って、下記のコードを追加してください。
+            <p>
+                Game.cpp
+            </p>
             <pre><code>
                 <div style="background-color: silver; padding: 4px;">
                     <font size="5" color="black">
@@ -182,6 +185,7 @@
         door->SetRotation(objData.rotation);
         //ドアの配列に作成したオブジェクトを加える。
         m_doorVector.push_back(door);
+        return true;
     }    
     </font>
     return true;
@@ -255,10 +259,150 @@
             <br>今までは、オブジェクトの名前の判定に「EqualObjectName関数」を使用していましたが、
             今回は「ForwardMatchName関数」を使用します。
             両者の違いは以下の通りです。
+            <p>
+                <img src="sprite/action2/24.png" width="700" height="400" alt="ダイワスカーレットをすこれ">
+                <img src="sprite/action2/25.png" width="700" height="400" alt="ダイワスカーレットをすこれ">
+            </p>
+            まず、「EqualObjectName関数」を使用している箇所を、「ForwardMatchName関数」に変更しましょう。
+            <p>
+                Game.cpp
+            </p>
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+            
 
+    //名前がbossだったら。
+    else if(objData.EqualObjectName(L"boss") == true)
+    {
+        //ボスのオブジェクトを作成する。
+        Boss* boss = NewGO&lt;Boss&gt;(0, "boss");
+        //座標を設定する。
+        boss->SetPosition(objData.position);
+        //回転を設定する。
+        boss->SetRotation(objData.rotation);
+        //ボスのHPは高めに設定する。
+        //HPを15に設定する。
+        boss->SetHP(15);
+        //作成したエネミーの和を数えたいので、+1する。
+        m_numEnemy++;
+        return true;
+    }
+    //名前がleverだったら。
+    else if(objData.<font color="red">ForwardMatchName</font>(L"lever") == true)
+    {
+        //レバーのオブジェクトを作成する。
+        auto lever = NewGO&lt;Lever&gt;(0,"lever");
+        //座標を設定する。
+        lever->SetPosition(objData.position);
+        //大きさを設定する。
+        lever->SetScale(objData.scale); 
+        //回転を設定する。
+        lever->SetRotation(objData.rotation);
+        //レバーの配列に作成したオブジェクトを加える。
+        m_leverVector.push_back(lever);
+        return true;
+    } 
+    
+    //名前がdoorだったら。
+    else if(objData.<font color="red">ForwardMatchName</font>(L"door") == true)
+    {
+        //ドアのオブジェクトを作成する。
+        auto door = NewGO&lt;Door&gt;(0, "door");
+        //座標を設定する。
+        door->SetPosition(objData.position);
+        //大きさを設定する。
+        door->SetScale(objData.scale);
+        //回転を設定する。
+        door->SetRotation(objData.rotation);
+        //ドアの配列に作成したオブジェクトを加える。
+        m_doorVector.push_back(door);
+        return true;
+    }    
+   
+    return true;
+});
+                            </div>
+                        </font>
+                        </code></pre>            
 
+                        では次に、「レバー」と「ドア」に番号を付けていきましょう。
+                        下記の赤い箇所のコードを追加してください。
+                        <p>
+                            Game.cpp
+                        </p>
+                        <pre><code>
+                            <div style="background-color: silver; padding: 4px;">
+                                <font size="5" color="black">
+                        
+            
+                //名前がbossだったら。
+                else if(objData.EqualObjectName(L"boss") == true)
+                {
+                    //ボスのオブジェクトを作成する。
+                    Boss* boss = NewGO&lt;Boss&gt;(0, "boss");
+                    //座標を設定する。
+                    boss->SetPosition(objData.position);
+                    //回転を設定する。
+                    boss->SetRotation(objData.rotation);
+                    //ボスのHPは高めに設定する。
+                    //HPを15に設定する。
+                    boss->SetHP(15);
+                    //作成したエネミーの和を数えたいので、+1する。
+                    m_numEnemy++;
+                    return true;
+                }
+                //名前がleverだったら。
+                else if(objData.ForwardMatchName(L"lever") == true)
+                {
+                    //レバーのオブジェクトを作成する。
+                    auto lever = NewGO&lt;Lever&gt;(0,"lever");
+                    //座標を設定する。
+                    lever->SetPosition(objData.position);
+                    //大きさを設定する。
+                    lever->SetScale(objData.scale); 
+                    //回転を設定する。
+                    lever->SetRotation(objData.rotation);
+                    //レバーの配列に作成したオブジェクトを加える。
+                    m_leverVector.push_back(lever);
+                    <font color="red">//番号を設定する。
+                    lever->SetLeverNumber(objData.number);</font>
+                    return true;
+                } 
+                
+                //名前がdoorだったら。
+                else if(objData.ForwardMatchName(L"door") == true)
+                {
+                    //ドアのオブジェクトを作成する。
+                    auto door = NewGO&lt;Door&gt;(0, "door");
+                    //座標を設定する。
+                    door->SetPosition(objData.position);
+                    //大きさを設定する。
+                    door->SetScale(objData.scale);
+                    //回転を設定する。
+                    door->SetRotation(objData.rotation);
+                    //ドアの配列に作成したオブジェクトを加える。
+                    m_doorVector.push_back(door);
+                    <font color="red">//番号を設定する。
+                    door->SetDoorNumber(objData.number);</font>
+                    return true;
+                }    
+               
+                return true;
+            });
+                                        </div>
+                                    </font>
+                                    </code></pre>
+                                    <font color="red">「objData.number」</font>で<font color="red">「@の後ろの数字」</font>を取得できます。
+                                    <br>出来たら、Visual Studioに戻ってF5キーで実行してみてください。
+                                    「レバー」と「ドア」が配置されていればおkです。
+                                    <br>以上で「レベルデザイン」は終了になります。
+                                    <br>次は、「レバー」に関しての実装をしていきます。
         </p>
 
+        <p>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSf9pvkOK7R0CjPRYqnoAC9_4UozUpQSwgSIorBHKriiywr92w/viewform">評価テストの回答をお願いします。</a>
+        </p>
 
 
         </ul>
