@@ -154,7 +154,7 @@ void Enemy::Attack()
 
 const bool Enemy::SearchPlayer() const
 {
-
+	return true;
 }
 
 void Enemy::MakeAttackCollision()

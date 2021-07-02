@@ -336,60 +336,60 @@
                                 <font size="5" color="black">
                         
             
-                //名前がbossだったら。
-                else if(objData.EqualObjectName(L"boss") == true)
-                {
-                    //ボスのオブジェクトを作成する。
-                    Boss* boss = NewGO&lt;Boss&gt;(0, "boss");
-                    //座標を設定する。
-                    boss->SetPosition(objData.position);
-                    //回転を設定する。
-                    boss->SetRotation(objData.rotation);
-                    //ボスのHPは高めに設定する。
-                    //HPを15に設定する。
-                    boss->SetHP(15);
-                    //作成したエネミーの和を数えたいので、+1する。
-                    m_numEnemy++;
-                    return true;
-                }
-                //名前がleverだったら。
-                else if(objData.ForwardMatchName(L"lever") == true)
-                {
-                    //レバーのオブジェクトを作成する。
-                    auto lever = NewGO&lt;Lever&gt;(0,"lever");
-                    //座標を設定する。
-                    lever->SetPosition(objData.position);
-                    //大きさを設定する。
-                    lever->SetScale(objData.scale); 
-                    //回転を設定する。
-                    lever->SetRotation(objData.rotation);
-                    //レバーの配列に作成したオブジェクトを加える。
-                    m_leverVector.push_back(lever);
-                    <font color="red">//番号を設定する。
-                    lever->SetLeverNumber(objData.number);</font>
-                    return true;
-                } 
+    //名前がbossだったら。
+    else if(objData.EqualObjectName(L"boss") == true)
+    {
+        //ボスのオブジェクトを作成する。
+        Boss* boss = NewGO&lt;Boss&gt;(0, "boss");
+        //座標を設定する。
+        boss->SetPosition(objData.position);
+        //回転を設定する。
+        boss->SetRotation(objData.rotation);
+        //ボスのHPは高めに設定する。
+        //HPを15に設定する。
+        boss->SetHP(15);
+        //作成したエネミーの和を数えたいので、+1する。
+        m_numEnemy++;
+        return true;
+    }
+    //名前がleverだったら。
+    else if(objData.ForwardMatchName(L"lever") == true)
+    {
+        //レバーのオブジェクトを作成する。
+        auto lever = NewGO&lt;Lever&gt;(0,"lever");
+        //座標を設定する。
+        lever->SetPosition(objData.position);
+        //大きさを設定する。
+        lever->SetScale(objData.scale); 
+        //回転を設定する。
+        lever->SetRotation(objData.rotation);
+        //レバーの配列に作成したオブジェクトを加える。
+        m_leverVector.push_back(lever);
+        <font color="red">//番号を設定する。
+        lever->SetLeverNumber(objData.number);</font>
+        return true;
+    } 
                 
-                //名前がdoorだったら。
-                else if(objData.ForwardMatchName(L"door") == true)
-                {
-                    //ドアのオブジェクトを作成する。
-                    auto door = NewGO&lt;Door&gt;(0, "door");
-                    //座標を設定する。
-                    door->SetPosition(objData.position);
-                    //大きさを設定する。
-                    door->SetScale(objData.scale);
-                    //回転を設定する。
-                    door->SetRotation(objData.rotation);
-                    //ドアの配列に作成したオブジェクトを加える。
-                    m_doorVector.push_back(door);
-                    <font color="red">//番号を設定する。
-                    door->SetDoorNumber(objData.number);</font>
-                    return true;
-                }    
+    //名前がdoorだったら。
+    else if(objData.ForwardMatchName(L"door") == true)
+    {
+        //ドアのオブジェクトを作成する。
+        auto door = NewGO&lt;Door&gt;(0, "door");
+        //座標を設定する。
+        door->SetPosition(objData.position);
+        //大きさを設定する。
+        door->SetScale(objData.scale);
+        //回転を設定する。
+        door->SetRotation(objData.rotation);
+        //ドアの配列に作成したオブジェクトを加える。
+        m_doorVector.push_back(door);
+        <font color="red">//番号を設定する。
+        door->SetDoorNumber(objData.number);</font>
+        return true;
+    }    
                
-                return true;
-            });
+    return true;
+});
                                         </div>
                                     </font>
                                     </code></pre>

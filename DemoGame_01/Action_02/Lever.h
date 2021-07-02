@@ -1,7 +1,6 @@
 #pragma once
 
-//クラス宣言。
-class CollisionObject;
+
 
 /// <summary>
 /// レバー。

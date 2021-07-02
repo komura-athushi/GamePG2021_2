@@ -18,9 +18,23 @@
         </h1>
 
        <ul>
+        <li>
+            <h2>
+                <p>3.1 ステート(状態)</p>
+            </h2>
+            <p>
+                早速、プログラミングをしていきたい所ですが、その前に「ステート(状態)」について説明します。
+                このゲームのオブジェクトの挙動は、<font color="red">「ステート(状態)」</font>によって管理されています。
+                <br>例えば、「Player」クラスであれば以下のような「ステート」が存在します。
+                <br><img src="sprite/action3/2.png" width="889" height="339" alt="ダイワスカーレットをすこれ">
+                <br>今回のゲームでは、この<font color="red">「ステート(状態)」を変化させることによりオブジェクトの挙動を制御</font>していきます。
+                <br>このことをしっかり覚えておいてください。
+
+            </p>
+         </li>
            <li>
                <h2>
-                   <p>3.1 CollisionObject</p>
+                   <p>3.2 CollisionObject</p>
                </h2>
             </li>
                <p>
@@ -29,18 +43,170 @@
                    <br>「CollisionObject」は、一言でいうと「PhysicsGhostObject」を使いやすくしたクラスになります。
                    「PhysicsGhostObject」については、k2EngineのSampleを参照してください。
                    <br>一言でいうと、通り抜けることができる「Collision(当たり判定)」です。
-                   <br>今回、どういう風に「レバー」を実装するかということですが、まず「プレイヤー」がレバーを押すアニメーションを再生した時に、<font color="red">「CollisionObject」</font>を発生させます。
+                   <br>今回、どういう風に「レバー」を実装するかということですが、まず「プレイヤー」がレバーを押すアニメーションを再生した時に、 プレイヤーの前に<font color="red">「CollisionObject」</font>を発生させます。
                    その<font color="red">「CollisionObject」</font>が<font color="blue">「レバーのCollisionObject」</font>と衝突していたら、レバーのアニメーションを再生させ、ドアの開閉を行います。
+                   <br><img src="sprite/action3/1.png" width="512" height="384" alt="ダイワスカーレットをすこれ">
+                   <img src="sprite/action3/3.png" width="450" height="344" alt="ダイワスカーレットをすこれ">
+                   <br><img src="sprite/action3/5.png" width="500" height="600" alt="ダイワスカーレットをすこれ">
+                   <br>尚、「CollisionObject」は基本自動で削除されるので、基本的に「DeleteGO」をする必要はありません。
                </p>
 
             <li>
                 <h2>
-                    <p>3.2 プレイヤー側のCollisionObjectの発生</p>
+                    <p>3.3 プレイヤー側のCollisionObjectの発生</p>
                 </h2>
+                それでは、「プレイヤー」が「レバーを押す」アニメーションをした時に、「CollisionObject」を発生させるコードを追加しましょう。
+                Visual Studioを開いてください。 
+                まず、「CollisionObject」を使用するには、ファイルをインクルードする必要があります。
+                Player.cppを開いて、下記のコードを追加してください。
+                <p>
+                    Player.cpp
+                </p>
+                <pre><code>
+                    <div style="background-color: silver; padding: 4px;">
+                        <font size="5" color="black">
+#include "stdafx.h"
+#include "Player.h"
+
+#include "Game.h"
+#include "FireBall.h"
+
+#include "sound/SoundEngine.h"
+#include "sound/SoundSource.h"
+
+<font color="red">//CollisionObjectを使用するために、ファイルをインクルードする。
+#include "collision/CollisionObject.h"</font>
+                        </div>
+                    </font>
+                    </code></pre>
             </li>
+            では、レバーを押すアニメーションが再生された時に、「CollisionObject」を発生させるコードを追加しましょう。
+            Game.cppの「MakePushLeverCollision関数」に下記のコードを追加してください。
+            200行目程にあります。
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+void Player::MakePushLeverCollision()
+{
+    <font color="red">//コリジョンオブジェクトを作成する。
+    CollisionObject* collisionObject = NewGO&lt;CollisionObject&gt;(0);
+    Vector3 collisionPosition = m_position;
+    //座標をプレイヤーの少し前に設定する。
+    collisionPosition += m_forward * 50.0f;
+    //球状のコリジョンを作成する。
+    collisionObject->CreateSphere(collisionPosition,       //座標。
+    Quaternion::Identity,                                  //回転。
+    70.0f);                                                //球の大きさ(半径)。
+    //名前を付ける。
+    collisionObject->SetName("player_lever");</font>
+}
+                    </div>
+                </font>
+                </code></pre>
+                この「MakePushLeverCollision関数」は、「レバーを押す」アニメーションが再生される時に呼ばれています。
+                <br><img src="sprite/action3/6.png" width="597" height="266" alt="ダイワスカーレットをすこれ">
+                <p>
+                    できたら、Visual Studioの「ソリューション構成」を「Deubg」に設定して、F5キーで実行してみてください。
+                    <br><img src="sprite/action3/7.png" width="744" height="198" alt="ダイワスカーレットをすこれ">
+                </p>
+                <br>このように、Aボタンを押した際に、球状の当たり判定がプレイヤーの前に作成されているでしょうか。
+                <br><img src="sprite/action3/8.png" width="1010" height="548" alt="ダイワスカーレットをすこれ">
+                <br>当たり判定を有効にしたい時は、「ソリューション構成」を「Debug」に設定してください、処理速度は遅くなりますが、当たり判定が可視化できます。
+                「Release」にすると、当たり判定が不可視になりますが、処理速度が早くなります。
+                <li>
+                    <h2>
+                        <p>3.4 レバーのCollisionObject</p>
+                    </h2>
+                </li>
+                続いて、「レバー」の「CollisionObject」を作成していきましょう。
+                レバーのCollisionObjectは、プレイヤーのように瞬間的に発生させるものではなくレバーが存在している時は<font color="red">常に存在</font>していて欲しいので、<font color="red">メンバ変数を使用してCollisionObjectを保持</font>させます。
+                では、Lever.hに下記のコードを追加してください。
+                <p>
+                    Lever.h
+                </p>
+                <pre><code>
+                    <div style="background-color: silver; padding: 4px;">
+                        <font size="5" color="black">
+#pragma once
 
-            
+<font color="red">//クラス宣言。
+class CollisionObject;</font>
+                            
+///&lt;summary&gt;
+///レバー。
+///&lt;summary&gt;
+class Lever : public IGameObject
+{
+public:
+    ///&lt;summary&gt;
+    ///レバーステート。
+    ///&lt;summary&gt;
+    enum EnLeverState {
+        .
+        .
+        .
+int                     m_leverNumber = 0;              //レバーの番号。
+<font color="red">CollisionObject*        m_collisionObject;              //コリジョンオブジェクト。</font>
+};
+                        </div>
+                    </font>
+                    </code></pre>
+                    続いて、Lever.cppに下記のコードを追加してください。
+                    <p>
+                        Lever.cpp
+                    </p>
+                    <pre><code>
+                        <div style="background-color: silver; padding: 4px;">
+                            <font size="5" color="black">
+#include "stdafx"
+#include "Lever.h"
 
+#include "Door.h"
+
+#include "sound/SoundEngine.h"
+#include "sound/SoundSource.h"
+
+<font color="red">//ファイルをインクルードする。
+#include "collision/CollisionObject.h"</font>
+
+Lever::Lever()
+{
+
+}
+
+Lever::~Lever()
+{
+
+}
+
+bool Lever::Start()
+{
+    //アニメーションを読み込む。
+    m_animationClips[enAnimationClip_Idle].Load("Assets/animData/lever/idle.tka");
+    m_animationClips[enAnimationClip_Idle].SetLoopFlag(false);
+                    .
+                    .
+                    .
+    //モデルを読み込む。
+    m_modelRender.Init("Assets/modelData/lever/lever.tkm");
+    m_modelRender.SetPosition(m_position);
+    m_modelRender.SetScale(m_scale);
+    m_modelRender.SetRotation(m_rotation);
+    
+    <font color="red">//コリジョンオブジェクトを作成する。
+    m_collisionObject = NewGO&lt;collisionObject&gt;(0);
+    //ボックス状のコリジョンを作成。
+    m_collisionObject->CreateBox(m_position,            //座標。
+    m_rotation,                                         //回転。
+    Vector3(70.0f,70.0f,70.0f));                        //大きさ。
+    //名前を設定する。
+    m_collisionObject->SetName("lever");
+    //自動で削除を無効にする(DeleteGOで削除する必要がある)。
+    m_collisionObject->SetIsEnableAutoDelete(false);</font>
+}
+                    </div>
+                </font>
+                </code></pre>
         </ul>
 
     </body>

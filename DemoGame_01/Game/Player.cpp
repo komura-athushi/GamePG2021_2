@@ -291,6 +291,7 @@ void Player::MakePushLeverCollision()
 	collisionPosition += m_forward * 50.0f;
 	//球状のコリジョンを作成する。
 	collisionObject->CreateSphere(collisionPosition, Quaternion::Identity, 70.0f);
+	//名前を付ける。
 	collisionObject->SetName("player_lever");
 }
 
