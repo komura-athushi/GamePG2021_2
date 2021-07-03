@@ -15,7 +15,8 @@ Lever::Lever()
 
 Lever::~Lever()
 {
-
+	//コリジョンオブジェクトを削除する。
+	DeleteGO(m_collisionObject);
 }
 
 bool Lever::Start()
@@ -41,8 +42,8 @@ bool Lever::Start()
 	m_collisionObject->SetIsEnableAutoDelete(false);
 
 	//音を読み込む。
-	g_soundEngine->ResistWaveFileBank(6, "Assets/sound/lever.wav");
-	return true;
+    g_soundEngine->ResistWaveFileBank(6, "Assets/sound/lever.wav");
+    return true;
 }
 
 void Lever::Update()
@@ -58,7 +59,26 @@ void Lever::Update()
 
 void Lever::ProcessTransitionPushState()
 {
-	
+	//プレイヤーが作成した、レバー用のコリジョンの配列を取得。
+	const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_lever");
+
+	//for文で配列を回す。
+	for (auto collision : collisions)
+	{
+		//レバー自身のコリジョンとプレイヤーのコリジョンが。
+		//衝突していたら。
+		if (collision->IsHit(m_collisionObject) == true)
+		{
+			//押すステートに遷移させる。
+			//押すステートに遷移させることにより、レバーの押すアニメーションが再生させる。
+			m_leverState = enLeverState_Push;
+			//効果音を流す。
+			SoundSource* se = NewGO<SoundSource>(0);
+			se->Init(6);
+			se->Play(false);
+			se->SetVolume(0.6f);
+		}
+	}
 }
 
 void Lever::ProcessTransitionPullState()

@@ -176,7 +176,9 @@ Lever::Lever()
 
 Lever::~Lever()
 {
-
+    <font color="red">//コリジョンオブジェクトを削除する。
+    DeleteGO(m_collisionObject);
+    </font>
 }
 
 bool Lever::Start()
@@ -203,10 +205,59 @@ bool Lever::Start()
     m_collisionObject->SetName("lever");
     //自動で削除を無効にする(DeleteGOで削除する必要がある)。
     m_collisionObject->SetIsEnableAutoDelete(false);</font>
+
+    //音を読み込む。
+    g_soundEngine->ResistWaveFileBank(6, "Assets/sound/lever.wav");
+    return true;
 }
                     </div>
                 </font>
                 </code></pre>
+                出来たら、F5キーで実行してみましょう。  
+                <br>このように、レバーにボックス状の当たり判定が作成されているでしょうか。
+                <br><img src="sprite/action3/9.png" width="1058" height="670" alt="ダイワスカーレットをすこれ">
+                <p>
+                    では、最後に「プレイヤーのコリジョン」と「レバーのコリジョン」が衝突した時のコードを追加していきましょう。
+                    Lever.cppの「ProcessTransitionPushState関数」に以下のコードを追加してください。
+                </p>
+                <p>
+                    Lever.cpp
+                </p>
+                <pre><code>
+                    <div style="background-color: silver; padding: 4px;">
+                        <font size="5" color="black">
+void Lever::ProcessTransitionPushState()
+{
+    <font color="red">//プレイヤーが作成した、レバー用のコリジョンの配列を取得。
+    const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_lever");
+
+    //for文で配列を回す。
+    for(auto collision : collisions)
+    {
+        //レバー自身のコリジョンとプレイヤーのコリジョンが。
+        //衝突していたら。
+        if(collision->IsHit(m_collisionObject) == true)
+        {
+            //押すステートに遷移させる。
+            //押すステートに遷移させることにより、レバーの押すアニメーションが再生させる。
+            m_leverState = enLeverState_Push;
+            //効果音を流す。
+            SoundSource* se = NewGO&lt;SoundSource&gt;(0);
+            se->Init(6);
+            se->Play(false);
+            se->SetVolume(0.6f);
+        }
+    }</font>
+}
+                    </div>
+                </font>
+                </code></pre>
+                <p>
+                    「CollisionObject」同士の判定を行うには「IsHit関数」を使用します。
+                    「CollisionObject」が衝突したら、レバーのステートを「enLeverState_Pull」にし、「押すアニメーション」を再生させるようにしています。
+                    「押すアニメーション」の再生が終了したら、「ドア」を開けるようにしています。
+                    <br><img src="sprite/action3/10.png" width="759" height="530" alt="ダイワスカーレットをすこれ">
+                </p>
         </ul>
 
     </body>
