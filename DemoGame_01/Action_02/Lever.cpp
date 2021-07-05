@@ -91,14 +91,7 @@ void Lever::ProcessTransitionPushIdleState()
 		//for文で配列を回す。
 		for (auto door : doors)
 		{
-			//レバーの番号とドアの番号が一致していたら。
-			if (m_leverNumber == door->GetDoorNumber())
-			{
-				//ドアに開けることを通知する。
-				door->NotifyOpen();
-				m_leverState = enLeverState_Push_Idle;
-				break;
-			}
+			
 		}
 	}
 }
@@ -113,14 +106,7 @@ void Lever::ProcessTransitionPullIdleState()
 		//for文で配列を回す。
 		for (auto door : doors)
 		{
-			//レバーの番号とドアの番号が一致していたら。
-			if (m_leverNumber == door->GetDoorNumber())
-			{
-				//ドアに閉めることを通知する。
-				door->NotifyClose();
-				m_leverState = enLeverState_Pull_Idle;
-				break;
-			}
+			
 		}
 	}
 }

@@ -86,7 +86,7 @@ void Lever::ProcessTransitionPullState()
 	//for文で配列を回す。
 	for (auto collision : collisions)
 	{
-		//レバー自身のコリジョンとプレイヤーの作成したコリジョンが衝突したら。
+		//レバー自身のコリジョンとプレイヤーの作成したコリジョンが衝突していたら。
 		if (collision->IsHit(m_collisionObject) == true)
 		{
 			//引くステートに遷移する。

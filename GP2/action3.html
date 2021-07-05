@@ -83,6 +83,9 @@
             では、レバーを押すアニメーションが再生された時に、「CollisionObject」を発生させるコードを追加しましょう。
             Game.cppの「MakePushLeverCollision関数」に下記のコードを追加してください。
             200行目程にあります。
+            <p>
+                Player.cpp
+            </p>
             <pre><code>
                 <div style="background-color: silver; padding: 4px;">
                     <font size="5" color="black">
@@ -218,7 +221,7 @@ bool Lever::Start()
                 <br><img src="sprite/action3/9.png" width="1058" height="670" alt="ダイワスカーレットをすこれ">
                 <p>
                     では、最後に「プレイヤーのコリジョン」と「レバーのコリジョン」が衝突した時のコードを追加していきましょう。
-                    Lever.cppの「ProcessTransitionPushState関数」に以下のコードを追加してください。
+                    <br>Lever.cppの「ProcessTransitionPushState関数」に以下のコードを追加してください。60行目辺りにあります。
                 </p>
                 <p>
                     Lever.cpp
@@ -253,11 +256,123 @@ void Lever::ProcessTransitionPushState()
                 </font>
                 </code></pre>
                 <p>
-                    「CollisionObject」同士の判定を行うには「IsHit関数」を使用します。
+                    <font color="red">「CollisionObject」同士の判定を行うには「IsHit関数」を使用します。</font>
                     「CollisionObject」が衝突したら、レバーのステートを「enLeverState_Pull」にし、「押すアニメーション」を再生させるようにしています。
-                    「押すアニメーション」の再生が終了したら、「ドア」を開けるようにしています。
-                    <br><img src="sprite/action3/10.png" width="759" height="530" alt="ダイワスカーレットをすこれ">
                 </p>
+                    <br>では次に、上記で解説した「レバーからドアに対するアクション」を、追加しましょう。
+                    Lever.cppの「ProcessTransitionPushIdleState関数」に下記のコードを追加してください。
+                    110行目前後にあると思います。
+                    <p>
+                        Lever.cpp
+                    </p>
+                    <pre><code>
+                        <div style="background-color: silver; padding: 4px;">
+                            <font size="5" color="black">
+void Lever::ProcessTransitionPushIdleState()
+{
+    //押すアニメーションの再生が終了したら。
+    if(m_modelRender.IsPlayingAnimation() == true)
+    {
+        //ドアのオブジェクトの配列を取得する。
+        auto doors = FindGOs&lt;Door&gt;("door");
+        //for文で配列を回す。
+        for(auto door : doors)
+        {
+            <font color="red">//レバーの番号とドアの番号が一致していれば。
+            if(m_leverNumber == door->GetDoorNumber())
+            {
+                //ドアに開けることを通知する。
+                door->NotifyOpen();
+                //ステートを「レバーを押して終わった」に変更する。
+                m_leverState = enLeverState_Push_Idle;
+                break;
+            }
+            </font>
+        }
+    }
+}
+                            </div>
+                        </font>
+                        </code></pre>
+                        <p>
+                            上記の実装は、「レバーの押すアニメーション」が終了したら、「ドアを開くアクション」をするというものです。
+                            <br>出来たら、F5キーで実行してみてください。レバーに近づいて、Aボタンを押したら、ドアが開くようになっているでしょうか。
+                            ボス部屋まで到達できるでしょうか。
+                            <br><img src="sprite/action3/10.png" width="1008" height="653" alt="ダイワスカーレットをすこれ">
+                        </p>
+                        では、最後に「ドア」を「閉じる」処理を追加していきましょう。まず、「プレイヤーのコリジョン」と「レバーのコリジョン」の当たり判定を実装しましょう。
+                        <br>Lever.cppの「ProcessTransitionPullState関数」に下記のコードを追加してください。80行目前後にあります。
+                        <p>
+                            Lever.cpp
+                        </p>
+                        <pre><code>
+                            <div style="background-color: silver; padding: 4px;">
+                                <font size="5" color="black">
+void Lever::ProcessTransitionPullState()
+{
+    <font color="red">//プレイヤーが作成した、レバー用のコリジョンの配列を取得。
+    const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_lever");
+
+    //for文で配列を回す。
+    for(auto collision : collisions)
+    {
+        //レバー自身のコリジョンとプレイヤーの作成したコリジョンが衝突していたら。
+        if(collision->IsHit(m_collisionObject) == true)
+        {
+            //引くステートに遷移する。
+            m_leverState = enLeverState_Pull;
+            //効果音を流す。
+            SoundSource* se = NewGO&lt;SoundSource&gt;(0);
+            se->Init(6);
+            se->Play(false);
+            se->SetVolume(0.7f);
+            break;
+        }
+    }</font>
+}
+                                </div>
+                            </font>
+                            </code></pre>
+                            では、最後に実際に「ドア」を「閉じる」実装をしましょう。
+                            <br>Lever.cppの「ProcessTransitionPullIdleState関数」に下記のコードを追加してください。150行目前後にあります。
+                            <p>
+                                Lever.cpp
+                            </p>
+                            <pre><code>
+                                <div style="background-color: silver; padding: 4px;">
+                                    <font size="5" color="black">
+void Lever::ProcessTransitionPullIdleState()
+{
+    //引くアニメーションの再生が終了したら。
+    if(m_modelRender.IsPlayingAnimation() == true)
+    {
+        //ドアのオブジェクトの配列を取得する。
+        auto doors = FindGOs&lt;Door&gt;("door");
+        //for文で配列を回す。
+        for(auto door : doors)
+        {
+            <font color="red">//レバーの番号とドアの番号が一致したら。
+            if(m_leverNumber == door->GetDoorNumber())
+            {
+                //ドアに閉めることを通知する。
+                door->NotifyClose();
+                //レバーを「引き終わった」ステートに遷移させる。
+                m_leverState = enLeverState_Pull_Idle;
+                break;
+            }</font>
+        }
+    }
+}
+                                    </div>
+                                </font>
+                                </code></pre>
+                                <p>
+                                    出来たら、F5キーで実行してみてください。ドアを閉めれるようになっているでしょうか。
+                                </p>
+                                <p>
+                                    <a href="https://docs.google.com/forms/d/e/1FAIpQLScaDiz2ImCUr7aNvGeO8HfTB03J0zhn1f9vv6ljXkrtXUggoA/viewform">評価テストの回答をお願いします。</a>
+                                </p>
+                                
         </ul>
 
     </body>

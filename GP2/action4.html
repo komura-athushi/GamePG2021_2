@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html lang="jp">
+    <head>
+        <title>
+            Action_03
+        </title>
+        <meta charset="UTF-8">    
+    </head>
+
+    <body>
+        <h1>
+            <a href="index.html">トップ</a>
+        </h1>
+
+        <h1>
+            Action_03 通常攻撃の実装
+        </h1>
+
+       <ul>
+        <li>
+            <h2>
+                <p>3.1 アニメーションベント</p>
+            </h2>
+        </li>
+        <p>
+            3ds Maxでは、「アニメーション」のデータを出力する際に、「アニメーションイベント」というものを設定できます。
+            <br>では、「アニメーションイベント」とはどういうものでしょうか？
+            <br>例えば、「プレイヤーの攻撃アニメーション」は以下のようなものです。
+            <br><iframe width="560" height="315" src="https://www.youtube.com/embed/bwgPnJjkW-A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <br>しかし、この「攻撃アニメーション」の全てで攻撃判定をしたいわけではありませんよね？
+            <br>下記のような、<font color="red">「剣を振り回している間」だけ攻撃判定を取りたい</font>わけです。
+            <br><iframe width="560" height="315" src="https://www.youtube.com/embed/rEvGAVxG1mQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <p>
+                そのような時に使用するのが、「アニメーションイベント」という訳です。
+                <br>「アニメーションイベント」を使用すれば、<font color="red">「アニメーションの再生中に任意のタイミングで、何らかの処理を実行する」</font>ことができます。
+                これを使用すれば、さきほどの「剣を振り回す間だけ、攻撃判定をする」ということが可能なような気がしませんか？           
+            </p>
+        </p>
+
+        <li>
+            <h2>
+                <p>3.2 通常攻撃のアニメーションイベント</p>
+            </h2>
+        </li>
+        <p>
+            <br>ではまず、<font color="red">3ds Maxで「アニメーションイベント」の「任意のタイミング」を設定</font>しましょう。 
+            <br>では、3ds Maxを開いて、Assets/modelData/humanのhuman_attack.fbxを読み込んでください。
+            <br><img src="sprite/action4/1.png" width="770" height="332" alt="ダイワスカーレットをすこれ">
+
+
+        </ul>
+
+    </body>
+
+</html>
