@@ -176,12 +176,7 @@ void Player::Attack()
 		return;
 	}
 
-	//攻撃判定中であれば。
-	if (m_isUnderAttack == true)
-	{
-		//攻撃用のコリジョンを作成する。
-		MakeAttackCollision();
-	}
+
 }
 
 void Player::MakeAttackCollision()

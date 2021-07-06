@@ -141,13 +141,16 @@ private:
 	void ProcessReceiveDamageStateTransition();
 	/// <summary>
 	/// ダウンステートの遷移処理。
-	/// </summary>
+	/// <summary>
 	void ProcessDownStateTransition();
 	/// <summary>
 	/// クリアステートの遷移処理。
-	/// </summary>
+	/// <summary>
 	void ProcessClearStateTransition();
-	
+
+	// アニメーションイベント用の関数。
+	void OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName);
+
 	//アニメーション。
 	enum EnAnimationClip {
 		enAnimationClip_Idle,				//待機アニメーション。	

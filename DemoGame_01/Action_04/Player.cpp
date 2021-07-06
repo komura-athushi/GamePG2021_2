@@ -62,7 +62,13 @@ bool Player::Start()
 	g_soundEngine->ResistWaveFileBank(3, "Assets/sound/slash.wav");
 	g_soundEngine->ResistWaveFileBank(7, "Assets/sound/hit_pitch.wav");
 
+	//アニメーションイベント用の関数を設定する。
+	m_modelRender.AddAnimationEvent([&](const wchar_t* clipName, const wchar_t* eventName) {
+		OnAnimationEvent(clipName, eventName);
+	});
+
 	m_game = FindGO<Game>("game");
+
 	return true;
 }
 
@@ -189,7 +195,18 @@ void Player::Attack()
 
 void Player::MakeAttackCollision()
 {
-	
+	//コリジョンオブジェクトを作成する。
+	auto collisionObject = NewGO<CollisionObject>(0);
+
+	Vector3 collisionPosition = m_position;
+	//座標をプレイヤーの少し前に設定する。
+	collisionPosition += m_forward * 50.0f;
+	//球状のコリジョンを作成する。
+	collisionObject->CreateSphere(collisionPosition,        //座標。
+		Quaternion::Identity,                               //回転。
+		70.0f                                               //半径。
+	);
+	collisionObject->SetName("player_attack");
 }
 
 void Player::MakeFireBall()
@@ -475,6 +492,21 @@ void Player::PlayAnimation()
 		break;
 	default:
 		break;
+	}
+}
+
+void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
+{
+	(void)clipName;
+	//キーの名前が「attack_start」の時。
+	if (wcscmp(eventName, L"attack_start") == 0) {
+		//攻撃中にする。
+		m_isUnderAttack = true;
+	}
+	//キーの名前が「attack_end」の時。
+	else if (wcscmp(eventName, L"attack_end") == 0) {
+		//攻撃を終わる。
+		m_isUnderAttack = false;
 	}
 }
 

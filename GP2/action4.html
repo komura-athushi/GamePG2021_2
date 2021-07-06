@@ -34,19 +34,257 @@
             <p>
                 そのような時に使用するのが、「アニメーションイベント」という訳です。
                 <br>「アニメーションイベント」を使用すれば、<font color="red">「アニメーションの再生中に任意のタイミングで、何らかの処理を実行する」</font>ことができます。
-                これを使用すれば、さきほどの「剣を振り回す間だけ、攻撃判定をする」ということが可能なような気がしませんか？           
+                これを使用すれば、さきほどの<font color="red">「剣を振り回す間だけ、攻撃判定をする」</font>ということが可能なような気がしませんか？           
             </p>
         </p>
 
         <li>
             <h2>
-                <p>3.2 通常攻撃のアニメーションイベント</p>
+                <p>3.2 通常攻撃のアニメーションキーの設定</p>
             </h2>
         </li>
         <p>
-            <br>ではまず、<font color="red">3ds Maxで「アニメーションイベント」の「任意のタイミング」を設定</font>しましょう。 
+            <br>ではまず、<font color="red">3ds Maxで「アニメーションイベント」の「任意のタイミング(アニメーションキー)」を設定</font>しましょう。 
             <br>では、3ds Maxを開いて、Assets/modelData/humanのhuman_attack.fbxを読み込んでください。
             <br><img src="sprite/action4/1.png" width="770" height="332" alt="ダイワスカーレットをすこれ">
+            <br>そうすると、このようなアニメーション付きのモデルが読み込まれたかと思います。
+            <br><img src="sprite/action4/2.png" width="960" height="511" alt="ダイワスカーレットをすこれ">
+            <p>3ds Max下部の「アニメーションを再生」というところを選択すると、「攻撃アニメ―ション」が再生されると思います。
+            <br><img src="sprite/action4/3.png" width="687" height="278" alt="ダイワスカーレットをすこれ">
+            </p>    
+            <p>
+                それでは、この「攻撃アニメーション」の、<font color="red">「剣の振り始め」</font>と<font color="red">「剣の振り終わり」</font>に「アニメーションキー」を設定していきましょう。
+                <br>まず、「ルートボーン」である、「Hips」を選択してください。
+                <img src="sprite/action4/5.png" width="376" height="680" alt="ダイワスカーレットをすこれ">
+                <br>次に、3ds Max上部の「グラフエディタ」の「トラックビュー ドープシート」を選択してください。
+                <br><img src="sprite/action4/4.png" width="687" height="278" alt="ダイワスカーレットをすこれ">
+                <p>
+                <br>そうすると、このようなウィンドウが表示されると思います。
+                <br><img src="sprite/action4/6.png" width="1192" height="559" alt="ダイワスカーレットをすこれ">
+                </p>
+                <br>次に、このウィンドウ上の「Hips」を選択して、「編集」→「ノート　トラック」→「追加」を選択してください。
+                <br><img src="sprite/action4/7.png" width="630" height="521" alt="ダイワスカーレットをすこれ">
+                <p>
+                <br>そして、「Hips」の左にある「+」をクリックすると、このように「ノート」という項目が追加されていると思います。
+                <br><img src="sprite/action4/8.png" width="442" height="270" alt="ダイワスカーレットをすこれ">
+                <br><img src="sprite/action4/9.png" width="400" height="400" alt="ダイワスカーレットをすこれ">
+                </p>
+                <p>
+                次に、「キー」→「キーを追加/除去ツール」を選択してください。これで「キー」を設定できるようになりました。
+                <br><img src="sprite/action4/10.png" width="508" height="231" alt="ダイワスカーレットをすこれ">
+                </p>
+                <p>
+                では、実際に「キー」を設定していきましょう。
+                <br>まず、追加された「ノート」を選択して、「ノート」項目の「19フレーム」付近をクリックしてください。
+                <br>そうすると、このように「キー」が追加されます。
+                <br><img src="sprite/action4/11.png" width="773" height="164" alt="ダイワスカーレットをすこれ">
+                <br><img src="sprite/action4/12.png" width="606" height="186" alt="ダイワスカーレットをすこれ">
+                <br>この追加した<font color="red">「キー」を右クリックする</font>ことで、<font color="red">「キーを編集」</font>することができます。右クリックしてみてください。
+                すると、次のようなウィンドウが表示されます。
+                <br><img src="sprite/action4/13.png" width="400" height="270" alt="ダイワスカーレットをすこれ">
+                <br>では、「キー」をこのように編集してみてください。
+                <br><img src="sprite/action4/14.png" width="600" height="400" alt="ダイワスカーレットをすこれ">
+                <br>すると、このように「キーの名前」が表示されます。
+                <br><img src="sprite/action4/15.png" width="300" height="150" alt="ダイワスカーレットをすこれ">
+                <p>
+                    次に、<font color="red">「剣の振り終わり」</font>の「アニメーションキー」を設定していきましょう。
+                    <br>先ほどと同じように、「ノート」の項目をクリックして「キー」を追加してください。
+                    <br><img src="sprite/action4/16.png" width="600" height="150" alt="ダイワスカーレットをすこれ">
+                    <br>次に、この追加した「キー」を右クリックして、キーをこのように編集してください。
+                    <br><img src="sprite/action4/17.png" width="600" height="400" alt="ダイワスカーレットをすこれ">
+                    <br>このようなキーが追加されたでしょうか？
+                    <br><img src="sprite/action4/18.png" width="700" height="280" alt="ダイワスカーレットをすこれ">
+                </p>
+                <p>
+                    では、この「アニメーションキー」のデータを出力していきます。
+                    <br>「トラックビュー　ドープシート」を閉じて、「ユーティリティ」から「tkExporter」を起動してください。
+                    <br><img src="sprite/action4/19.png" width="270" height="577" alt="ダイワスカーレットをすこれ">
+                    <br>次に、「tkExporter」の「Animation」項目の「start frame」と「end frame」を下記のように設定してください。
+                    <br><img src="sprite/action4/20.png" width="300" height="340" alt="ダイワスカーレットをすこれ">
+                    <br>最後に、「Save」から、Assets/animData/humanのattack.tkaを選択して保存してください。
+                    <br><img src="sprite/action4/21.png" width="500" height="560" alt="ダイワスカーレットをすこれ">
+                    <br><img src="sprite/action4/22.png" width="600" height="320" alt="ダイワスカーレットをすこれ">
+                    <br>これで、3ds Max側の操作は終了です。
+                </p>
+
+                </p>
+            </p>
+
+        </p>
+
+        <li>
+            <h2>
+                <p>3.3 アニメーションイベントを使用した通常攻撃</p>
+            </h2>
+        </li>
+        <p>
+            では、設定した「アニメーションキー」を使用して、通常攻撃の当たり判定を実装していきましょう。
+            <br>それでは、Game.slnからいつも通りVisual Studioを立ち上げてください
+            <br>そして、Player.hに<font color="red">「アニメーションイベント」で使用するための関数を宣言</font> してください。150行目程度です。
+            <p>
+                Player.h
+            </p>
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+class Player : public IGameObject
+{
+public:
+        .
+        .
+        .
+    /// &lt;summary&gt;
+    /// ダウンステートの遷移処理。
+    /// &lt;summary&gt;
+    void ProcessDownStateTransition();
+    /// &lt;summary&gt;
+    /// クリアステートの遷移処理。
+    /// &lt;summary&gt;
+    void ProcessClearStateTransition();
+    <font color="red">
+    // アニメーションイベント用の関数。
+    void OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName);
+    </font>
+    //アニメーション。
+    enum enAnimationClip {
+        enAnimationClip_Idle,               //待機アニメーション。
+       .
+       .
+       .
+};
+                    </div>
+                </font>
+                </code></pre>
+                <p>
+                    次に、Player.cppにこの関数の中身を記述していきます。場所はどこでも構いません。
+                    <p>
+                        Player.cpp
+                    </p>
+                    <pre><code>
+                        <div style="background-color: silver; padding: 4px;">
+                            <font size="5" color="black">
+<font color="red">
+void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
+{
+    //キーの名前が「attack_start」の時。
+    if(wcscmp(eventName, L"attack_start"))
+    {
+        //攻撃中にする。
+        m_isUnderAttack = true;
+    }
+    //キーの名前が「attack_end」の時。
+    else if(wcscmp(eventName, L"attack_end"))
+    {
+        //攻撃を終わる。
+        m_isUnderAttack = false;
+    }
+}</font>
+
+void Player::Render(RenderContext& rc)
+{
+    //モデルを描画する。
+    m_modelRender.Draw(rc);
+}
+                            </div>
+                        </font>
+                        </code></pre>
+                        <font color="red">m_isUnderAttackがtrueの時は攻撃中ということです。</font>
+                        <p>
+                            次に、この「OnAnimationEvent関数」を「ModelRender」に設定しましょう。
+                            Player.cppの「Start関数」に下記のコードを追加してください。
+                            <p>
+                                Player.cpp
+                            </p>
+                            <pre><code>
+                                <div style="background-color: silver; padding: 4px;">
+                                    <font size="5" color="black">
+bool Player::Start()
+{
+    //アニメーションをロードする。
+            .
+            .
+            .
+    //各サウンドをロードする。
+    g_soundEngine->ResistWaveFileBank(0, "Assets/sound/magic.wav");
+    g_soundEngine->ResistWaveFileBank(3, "Assets/sound/slash.wav");
+    g_soundEngine->ResistWaveFileBank(7, "Assets/sound/hit_pitch.wav");
+
+    <font color="red">//アニメーションイベント用の関数を設定する。
+    m_modelRender.AddAnimationEvent([&](const wchar_t* clipName, const wchar_t* eventName) {
+        OnAnimationEvent(clipName, eventName);
+    });</font>
+
+    m_game = FindGO&lt;Game&gt;("game");
+    return true;
+}
+                                    </div>
+                                </font>
+                                </code></pre>
+                        </p>
+                        <p>
+                            <br>では、次にこの「m_isUnderAttack」を利用して、通常攻撃の当たり判定を実装していきましょう。
+                            <br>Player.cppのAttack関数に下記のコードを追加してください。180行目位にあります。
+                            <p>
+                                Player.cpp
+                            </p>
+                            <pre><code>
+                                <div style="background-color: silver; padding: 4px;">
+                                    <font size="5" color="black">
+void Player::Attack()
+{
+    //攻撃中でないなら、処理をしない。
+    if(m_playerState != enPlayerState_Attack)
+    {
+        return;
+    }
+
+    <font color="red">//攻撃判定中であれば。
+    if(m_isUnderAttack == true)
+    {
+        //攻撃用のコリジョンを作成する。
+        MakeAttackCollision();
+    }</font>
+}
+                                    </div>
+                                </font>
+                                </code></pre>
+                        </p>
+                        <p>
+                            続いて、この「MakeAttackCollision関数」を実装していきます。
+                            Player.cppのMakeAttackCollision関数に下記のコードを追加してください。200行目位にあります。
+                            <p>
+                                Player.cpp
+                            </p>
+                            <pre><code>
+                                <div style="background-color: silver; padding: 4px;">
+                                    <font size="5" color="black">
+void Player::MakeAttackCollision()
+{
+    <font color="red">//コリジョンオブジェクトを作成する。
+    auto collisionObject = NewGO&lt;CollisionObject&gt;(0);
+
+    Vector3 collisionPosition = m_position;
+    //座標をプレイヤーの少し前に設定する。
+    collisionPosition += m_forward * 50.0f;
+    //球状のコリジョンを作成する。
+    collisionObject->CreateSphere(collisionPosition,        //座標。
+        Quaternion::Identity,                               //回転。
+        70.0f                                               //半径。
+    );
+    collisionObject->SetName("player_attack");</font>
+}
+                                    </div>
+                                </font>
+                                </code></pre>
+                                <br>出来たら、「ソリューション構成」を「Debug」に設定して、F5キーで実行してみましょう。
+                                コントローラーのYボタンで通常攻撃です。
+                                <br>下記のように、「剣を振り回している間」だけコリジョンが発生しているでしょうか？
+                                <br><iframe width="560" height="315" src="https://www.youtube.com/embed/3gz1dWoz0b4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+                        </p>
+                </p>
+                
+        </p>
 
 
         </ul>
