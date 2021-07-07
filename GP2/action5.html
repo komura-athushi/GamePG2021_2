@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="jp">
+    <head>
+        <title>
+            Action_04
+        </title>
+        <meta charset="UTF-8">    
+    </head>
+
+    <body>
+        <h1>
+            <a href="index.html">トップ</a>
+        </h1>
+
+        <h1>
+            Action_04 通常攻撃の実装＿後篇
+        </h1>
+
+       <ul>
+        <li>
+            <h2>
+                <p>3.1 エネミー側の当たり判定</p>
+            </h2>
+        </li>
+        <p>
+            Action_03では、プレイヤー側の攻撃判定を実装しました。次に、「エネミー」側の当たり判定を実装しましょう。
+            <br>いつものごとく、Game.slnからVisual Studioを立ち上げてください。
+            <br>では、Enemy.cppに下記のコードを追加してください。
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+#include "stdafx.h"
+#include "Enemy.h"
+
+#include "Game.h"
+#include "FireBall.h"
+#include "Player.h"
+
+#include "sound/SoundEngine.h"
+#include "sound/SoundSource.h"
+
+#include &lt;time.h&gt;
+#include &lt;stdlib.h&gt;
+
+<font color="red">//CollisionObjectを使用したいため、ファイルをインクルードする。
+#include "collision/CollisionObject.h"</font>
+
+Enemy::Enemy()
+{
+
+}
+            .
+            .
+            .
+void Enemy::Collision()
+{
+    <font color="red">//プレイヤーの攻撃用のコリジョンを取得する。
+    const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_attack");
+    //コリジョンの配列をfor文で回す。
+    for(auto collision : collisions)
+    {
+        //コリジョンとキャラコンが衝突したら。
+        if(collision->IsHit(m_charaCon))
+        {
+            //HPを1減らす。
+            m_hp -= 1;
+
+            //効果音を再生する。
+            SoundSource* se = NewGO&lt;SoundSource&gt;(0);
+            se->Init(4);
+            se->Play(false);
+            se->SetVolume(0.4f);
+            return;
+        }
+    }
+    </font>
+}
+                    </div>
+                </font>
+                </code></pre>
+                出来たら、F5キーで実行してみてください。通常攻撃がエネミーにヒットすれば、音がなるようになったと思います。
+                <br>ですが、いくら攻撃してもエネミーは何の反応も示さないと思います。さらに、ヒット音もおかしくなっています。
+                <br>何が原因なのでしょうか？？
+        </p>
+
+        <li>
+            <h2>
+                <p>3.2 エネミーのステート遷移</p>
+            </h2>
+        </li>
+        <p>
+            Action_02で、<font color="red">このゲームのオブジェクトの挙動は、「ステート」によって管理</font>されているといいました。
+            <br>「Enemy」には、以下のような「ステート」が存在します。
+            <br><img src="sprite/action5/1.png" width="954" height="423" alt="ダイワスカーレットをすこれ">
+            <p>
+                攻撃をした際に「エネミー」が何の反応も示さなかったのは、「ステート」を遷移させてなかったからでした。
+                <br>それでは、「エネミー」に「ステート」を遷移させる処理を追加しましょう。
+                <p>
+                    Enemy.cpp
+                </p>
+                <pre><code>
+                    <div style="background-color: silver; padding: 4px;">
+                        <font size="5" color="black">
+void Enemy::Collision()
+{
+    //プレイヤーの攻撃用のコリジョンを取得する。
+    const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_attack");
+    //コリジョンの配列をfor文で回す。
+    for(auto collision : collisions)
+    {
+        //コリジョンとキャラコンが衝突したら。
+        if(collision->IsHit(m_charaCon))
+        {
+            //HPを1減らす。
+            m_hp -= 1;
+
+            <font color="red">//HPが0より上なら。
+            if(m_hp > 0)
+            {
+                //被ダメージステートに遷移する。
+                m_enemyState = enEnemyState_ReceiveDamage;
+            }
+            //HPが0なら。
+            else if(m_hp == 0)
+            {
+                //ダウンステートに遷移する。
+                m_enemyState = enEnemyState_Down;
+            }</font>
+                                    
+            //効果音を再生する。
+            SoundSource* se = NewGO&lt;SoundSource&gt;(0);
+            se->Init(4);
+            se->Play(false);
+            se->SetVolume(0.4f);
+            return;
+        }
+    }             
+}
+                        </div>
+                    </font>
+                    </code></pre>
+
+                    出来たら、F5キーで実行してみてください。エネミーが倒せるようになっていると思います。
+                    <br>しかし相変わらず音が変です。何故でしょうか？
+            </p>
+
+            プレイヤーの通常攻撃の当たり判定は、3ds Maxで設定した「attack_start」から「attack_end」キーまでの間、
+            毎フレーム発生します。
+            <br>つまり、<font color="red">「エネミー」側の当たり判定もその間、毎フレーム攻撃された</font>という判定になってしまうのです。
+            なので、<font color="red">一度の攻撃でHPが数十減ったり、音が毎フレーム発生</font>していたりしていたのです。
+            <br>アクションゲームでは、「ハメ」防止のために攻撃を受け付けない「無敵時間」が実装されていることがあります。
+            <br>この「無敵時間」を、「ステート」を使用して実装してみましょう。
+            それでは、Enemy.cppに下記のコードを追加してください。
+            <p>
+                Enemy.cpp
+            </p>
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+void Enemy::Collision()
+{
+    <font color="red">//被ダメージ、あるいはダウンステートの時には。
+    //当たり判定処理をしない。
+    if(m_enemyState == enEnemyState_ReceiveDamage ||
+    m_enemyState == enEnemyState_Down)
+    {
+        reteurn;
+    }</font>
+
+    //プレイヤーの攻撃用のコリジョンを取得する。
+    const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_attack");
+            .
+            .
+            .
+}
+                    </div>
+                </font>
+                </code></pre>
+                出来たら、F5キーで実行してみましょう。
+                <br>音が不自然では無くなってるはずです。
+        </p>
+
+        <li>
+            <h2>
+                <p>3.3 ボーンを利用した当たり判定</p>
+            </h2>
+        </li>
+        <p>
+            今回、通常攻撃の当たり判定は球体の当たり判定であり、かなり大雑把になっています。
+            <br>しかし、「ダークソウル」などのアクションゲームでは、プレイヤーの所持している「剣」などの形にそって当たり判定が作成されています。
+            <br><img src="sprite/action5/2.png" width="1015" height="544" alt="ダイワスカーレットをすこれ">
+            <br>攻撃の当たり判定をこのように、「剣」の形に実装してみましょう。
+            <br>それでは、Player.cppのMakeAttackCollisionを下記のように修正してください。
+            <p>
+                Player.cpp
+            </p>
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+void Player::MakeAttackCollision()
+{
+    //コリジョンオブジェクトを作成する。
+    auto collisionObject = NewGO&lt;CollisionObject&gt;(0);
+
+    Vector3 collisionPosition = m_position;
+    //座標をプレイヤーの少し前に設定する。
+    collisionPosition += m_forward * 50.0f;
+    <font color="red">//ボックス状のコリジョンを作成する。
+    collisionObject->CreateBox(collisionPosition,               //座標。
+    Quaternion::Identity,                                       //回転。
+    Vector3(110.0f, 15.0f, 15.0f)                               //大きさ。
+    );</font>
+    collisionObject->SetName("player_attack");
+}
+                    </div>
+                </font>
+                </code></pre>
+                出来たら、F5キーで実行してみましょう。
+                このように、「剣」のような細長い当たり判定が作成されていると思います。
+                <br><img src="sprite/action5/3.png" width="1014" height="547" alt="ダイワスカーレットをすこれ">
+                <br>しかし、この当たり判定は「剣」に沿っているとは言い難いですね？この当たり判定を、「剣」の座標や回転と同じようにする必要があります。
+                <br>そこで、「ボーン」を使用します。
+                <p>
+                    <br>3ds Maxを開いて、Assets/modelData/humanのhuman_attack.fbxを読み込んでください。
+                    <br>humanには様々なボーンが設定されていますが、「Sword」というボーンが存在しています。
+                    <br><img src="sprite/action5/4.png" width="1400" height="700" alt="ダイワスカーレットをすこれ">
+                    <br>この「Sword」というボーンが、プレイヤーの「剣」ポリゴンを動かしています。このボーンを使用すれば上手くいくような気がしませんか？
+                </p>
+                <p>
+                    それでは、
+                </p>
+        </p>
+
+
+
+        </ul>
+
+    </body>
+
+</html>

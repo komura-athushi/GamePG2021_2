@@ -127,13 +127,7 @@ void Enemy::Chase()
 
 void Enemy::Collision()
 {
-	//被ダメージ、あるいはダウンステートの時は。
-	//当たり判定処理はしない。
-	if (m_enemyState == enEnemyState_ReceiveDamage ||
-		m_enemyState == enEnemyState_Down)
-	{
-		return;
-	}
+	
 
 	
 }
