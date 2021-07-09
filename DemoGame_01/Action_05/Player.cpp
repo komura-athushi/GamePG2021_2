@@ -69,6 +69,9 @@ bool Player::Start()
 
 	m_game = FindGO<Game>("game");
 
+	//「Sword」ボーンのID(番号)を取得する。
+	m_swordBoneId = m_modelRender.FindBoneID(L"Sword");
+
 	return true;
 }
 
@@ -207,6 +210,11 @@ void Player::MakeAttackCollision()
 		Vector3(110.0f, 15.0f, 15.0f)                               //大きさ。
 	);
 	collisionObject->SetName("player_attack");
+
+	//「Sword」ボーンのワールド行列を取得する。
+	Matrix matrix = m_modelRender.GetBone(m_swordBoneId)->GetWorldMatrix();
+	//「Sword」ボーンのワールド行列をコリジョンに適用する。
+	collisionObject->SetWorldMatrix(matrix);
 }
 
 void Player::MakeFireBall()

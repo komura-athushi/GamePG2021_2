@@ -14,13 +14,13 @@
         </h1>
 
         <h1>
-            Action_04 通常攻撃の実装＿後篇
+            Action_04 通常攻撃の実装＿中編
         </h1>
 
        <ul>
         <li>
             <h2>
-                <p>3.1 エネミー側の当たり判定</p>
+                <p>5.1 エネミー側の当たり判定</p>
             </h2>
         </li>
         <p>
@@ -86,7 +86,7 @@ void Enemy::Collision()
 
         <li>
             <h2>
-                <p>3.2 エネミーのステート遷移</p>
+                <p>5.2 エネミーのステート遷移</p>
             </h2>
         </li>
         <p>
@@ -183,7 +183,7 @@ void Enemy::Collision()
 
         <li>
             <h2>
-                <p>3.3 ボーンを利用した当たり判定</p>
+                <p>5.3 ボーンを利用した当たり判定</p>
             </h2>
         </li>
         <p>
@@ -232,7 +232,85 @@ void Player::MakeAttackCollision()
                     <p>
                         Player.h
                     </p>
+                    <pre><code>
+                        <div style="background-color: silver; padding: 4px;">
+                            <font size="5" color="black">
+class Player : public IGameObject
+{
+    public:
+            .
+            .
+            .
+    int                     m_hp = 10;
+    Game*                   m_game = nullptr;
+    <font color="red">int                     m_swordBoneId = -1;                   //「Sword」ボーンのID。</font>               
+};
+                        </div>
+                    </font>
+                    </code></pre>
+                    <p>
+                        次に、Player.cppのStart関数に下記のコードを追加してください。
+                    </p>
+                    <p>
+                        Player.cpp
+                    </p>
+                    <pre><code>
+                        <div style="background-color: silver; padding: 4px;">
+                            <font size="5" color="black">
+bool Player::Start()
+{
+                .
+                .
+                .
+    m_game = FindGO&lt;Game&gt;("game");
+
+    <font color="red">//「Sword」ボーンのID(番号)を取得する。
+    m_swordBoneId = m_modelRender.FindBoneID(L"Sword");</font>
+
+    return true;
+}
+                            </div>
+                        </font>
+                        </code></pre>
+                        <p>
+                            上記のコードは「Sword」ボーンのID(番号)を取得しています。IDを取得する事により、「Sword」ボーンの情報を持ってくることが可能になります。
+                            <br>それでは、この「m_swordBoneId」を使用して、当たり判定を実装していきましょう。
+                            Player.cppのMakeAttackCollision関数を以下のように修正してください。
+                        </p>
+                        <p>
+                            Player.cpp
+                        </p>
+                        <pre><code>
+                            <div style="background-color: silver; padding: 4px;">
+                                <font size="5" color="black">
+void Player::MakeAttackCollision()
+{
+                .
+                .
+                .
+    collisionObject->SetName("player_attack");
+
+    <font color="red">//「Sword」ボーンのワールド行列を取得する。
+    Matrix matrix = m_modelRender.GetBone(m_swordBoneId)->GetWorldMatrix();
+    //「Sword」ボーンのワールド行列をコリジョンに適用する。
+    collisionObject->SetWorldMatrix(matrix);</font>    
+}
+                                </div>
+                            </font>
+                            </code></pre>
+
+                            <p>
+                                出来たら、F5キーで実行してみましょう。
+                                このように、当たり判定が剣の形に沿うようになっているでしょうか。
+                                <br><img src="sprite/action5/2.png" width="1015" height="544" alt="ダイワスカーレットをすこれ">
+                                <br><font color="red">行列</font>という言葉が出てきました。これは一体どういうものでしょうか。
+                                <font color="red">行列</font>は座標、大きさ、回転を1つにしたものと思ってください。つまり、「Sword」ボーンの行列には、「Sowrd」ボーンの座標、大きさ、回転の情報が入っているということです。
+                                <br>この行列をCollisionObjectに適用させたということです。
+                            </p>
                 </p>
+        </p>
+        <p>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfpBmU_iVsyRwz62vU2p_o0h8KtZjSB50L3FOkP8rjoLklKDg/viewform">評価テストの回答をお願いします。</a>
         </p>
 
 
