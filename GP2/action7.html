@@ -20,6 +20,229 @@
        <ul>
         <li>
             <h2>
-                <p>7.1 アニメーションイベント</p>
+                <p>7.1 アニメーションキー</p>
             </h2>
         </li>
+        <p>
+            ここまで、プレイヤーの通常攻撃を実装してきました。
+            <br>次は、プレイヤーの魔法攻撃を実装していきましょう。このプレイヤーの魔法攻撃は、火の玉を飛ばすというものです。
+            <br><img src="sprite/action7/1.png" width="653" height="485" alt="ダイワスカーレットをすこれ">
+            <br><img src="sprite/action7/2.png" width="781" height="473" alt="ダイワスカーレットをすこれ">
+            <br>ゲームパッドのXボタンで魔法攻撃です。ですが、まだアニメーションが再生されるだけです。
+            <br>通常攻撃の実装で学んだ、アニメーションイベント、エフェクトなどを使用して、魔法攻撃を実装していきましょう。
+            <br>まず、アニメーションイベントを使用して、火の玉が生成させる時間を調整したいと思います。
+            <br>プレイヤーの魔法攻撃のアニメーションは以下のようになっています。
+            <br><iframe width="800" height="475" src="https://www.youtube.com/embed/-HpitEkCrDI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <br>このアニメーションの内、プレイヤーが手を前に突き出すタイミングで火の玉を生成したいと思います。
+            <br><img src="sprite/action7/3.png" width="885" height="605" alt="ダイワスカーレットをすこれ">
+            <br>では、3ds Maxでアニメーションキーを設定していきましょう。
+            <br>3ds Maxを立ち上げて、Assets/modelData/humanのhuman_attack.fbxを読み込んでください。
+            <br>では、Actiion_03を参考にして、39フレーム目に「magic_attack」というキーを設定してください。
+            <br><img src="sprite/action7/4.png" width="975" height="508" alt="ダイワスカーレットをすこれ">
+            <br>出来たら、Assets/animData/humanのmagicattack.tkaに保存してください。
+            <br><img src="sprite/action7/5.png" width="500" height="600" alt="ダイワスカーレットをすこれ">
+            <br><img src="sprite/action7/6.png" width="633" height="387" alt="ダイワスカーレットをすこれ">
+        </p>
+
+        <li>
+            <h2>
+                <p>7.2 アニメーションイベント</p>
+            </h2>
+        </li>
+        <p>
+            では、先ほど設定したアニメーションキーを使用して、火の玉を生成するようにしてみましょう。
+            <br>Visual Studioを開いて、Player.cppのMakeFireBall関数とOnAnimationEvent関数に下記のコードを追加してください。
+            <p>
+                Player.cpp
+            </p>
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+                .
+                .
+                .
+void Player::MakeFireBall()
+{
+    <font color="red">//ファイヤーボールを作成する。
+    FireBall* fireBall = NewGO&lt;FireBall&gt;(0);
+    Vector3 fireBallPosition = m_position;
+    //座標を少し上にする。
+    fireBallPosition.y += 70.0f;
+    //座標を設定する。
+    fireBall->SetPosition(fireBallPosition);
+    fireBall->SetRotation(m_rotation);
+    //術者はプレイヤーにする。
+    fireBall->SetEnMagician(FireBall::enMagician_Player);</font>
+}
+                .
+                .
+                .
+void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
+{
+    //キーの名前が「attack_start」の時。
+    if (wcscmp(eventName, L"attack_start") == 0) {
+        //攻撃中にする。
+        m_isUnderAttack = true;
+        //エフェクトを発生させる。
+        MakeSlashingEffect();
+    }
+    //キーの名前が「attack_end」の時。
+    else if (wcscmp(eventName, L"attack_end") == 0) {
+        //攻撃を終わる。
+        m_isUnderAttack = false;
+    }
+    <font color="red">//キーの名前が「magic_attack」の時。
+    else if (wcscmp(eventName, L"magic_attack") == 0) {
+        //ファイヤーボールを作成する。
+        MakeFireBall();
+    }</font>
+}
+                    </div>
+                </font>
+                </code></pre>
+        </p>
+        出来たら、F５キーで実行してみましょう。しかし、Xボタンを押しても音が発生するだけで、火の玉は生成されなかったと思います。
+        <br>これは、火の玉にあたる「FireBall」クラスが作りかけであるからです。次はこの「FireBall」クラスにコードを追加していきましょう。
+
+        <li>
+            <h2>
+                <p>7.3 当たり判定</p>
+            </h2>
+        </li>
+        <p>
+            では、まず「FireBall」クラスにCollisionObjectを追加しましょう。
+            FireBall.hに下記のコードを追加してください。
+            <p>
+                FireBall.h
+            </p>
+
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+#pragma once
+
+<font color="red">//クラス宣言。
+class CollisionObject;</font>
+
+///&lt;summary&gt;
+///ファイヤーボール。
+///&lt;summary&gt;
+class FireBall : public IGameObject
+{
+    public:
+                .
+                .
+                .
+    EnMagician                  m_enMagician = enMagician_None;         //術者。
+    float                       m_timer = 0.0;                          //タイマー。
+    <font color="red">CollisionObject*            m_collisionObject = nullptr;            //CollisionObject。</font>
+}
+
+                    </div>
+                </font>
+                </code></pre>
+        </p>
+
+        <p>
+            次に、FireBall.cppに下記のコードを追加してください。
+            <p>
+                FireBall.cpp
+            </p>
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+#include "stdafx.h"
+#include "FireBall.h"
+
+#include "sound/SoundEngine.h"
+#include "sound/SoundSource.h"
+
+<font color="red">//CollisionObjectを使用したいので、ファイルをインクルードする。
+#include "collision/CollisionObject.h"</font>
+
+FireBall::FireBall()
+{
+
+}
+
+FireBall::~FireBall()
+{
+    <font color="red">//コリジョンオブジェクトを削除する。
+    DeleteGO(m_collisionObject);</font>
+}
+
+bool FireBall::Start()
+{
+                .
+                .
+                .
+    //効果音を再生する。
+    SoundSource* se = NewGO&lt;SoundSource&gt;(0);
+    se->Init(1);
+    se->Play(false);
+    se->SetVolume(1.5f);
+
+    <font color="red">//コリジョンオブジェクトを作成する。
+    m_collisionObject = NewGO&lt;CollisionObject&gt;(0);
+    //球状のコリジョンを作成する。
+    m_collisionObject->CreateSphere(
+        m_position,                     //座標。
+        Quaternion::Identity,           //回転。
+        35.0f                           //半径。
+    );
+
+    //術者がプレイヤーだったら。
+    if (m_enMagician == enMagician_Player)
+    {
+        //名前をplayer_fireballにする。
+        m_collisionObject->SetName("player_fireball");
+    }
+    //術者がエネミーだったら。
+    else if (m_enMagician == enMagician_Enemy)
+    {
+        //名前をenemy_fireballにする。
+        m_collisionObject->SetName("enemy_fireball");
+    }
+    
+    //コリジョンオブジェクトが自動で削除されないようにする。
+    m_collisionObject->SetIsEnableAutoDelete(false);
+    </font>
+
+    return true;
+}
+
+                    </div>
+                </font>
+                </code></pre>
+                出来たら、ソリューション構成をDebugにして実行してみてください。
+                <br>Xボタンを押すと、このように球形の当たり判定が発生していると思います。
+                <br><img src="sprite/action7/7.png" width="782" height="526" alt="ダイワスカーレットをすこれ">
+                <br>火の玉は、プレイヤーの前に発生した後前方に動く予定なので、当たり判定も前方に移動させましょう。
+                <br>それでは、FireBall.cppのUpdate関数に下記のコードを追加してください。
+                <p>
+                    FireBall.cpp
+                </p>
+                <pre><code>
+                    <div style="background-color: silver; padding: 4px;">
+                        <font size="5" color="black">
+void FireBall::Update()
+{
+    <font color="red">//座標を設定する。
+    m_position += m_moveSpeed * g_gameTime->GetFrameDeltaTime();
+    //コリジョンオブジェクトに座標を設定する。
+    m_collisionObject->SetPosition(m_position);</font>
+
+                .
+                .
+                .
+}
+                        </div>
+                    </font>
+                    </code></pre>
+        </p>
+
+    </ul>
+
+</body>
+
+</html>

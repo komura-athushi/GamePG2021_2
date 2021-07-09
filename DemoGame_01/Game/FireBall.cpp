@@ -58,8 +58,10 @@ bool FireBall::Start()
 		m_collisionObject->SetName("enemy_fireball");
 	}
 	
-	//懲り所オブジェクトが自動で削除されないようにする。
+	//コリジョンオブジェクトが自動で削除されないようにする。
 	m_collisionObject->SetIsEnableAutoDelete(false);
+
+
 	//音を読み込む。
 	g_soundEngine->ResistWaveFileBank(1, "Assets/sound/fire_cut_cut.wav");
 	//効果音を再生する。

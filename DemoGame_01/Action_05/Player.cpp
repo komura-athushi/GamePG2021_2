@@ -505,7 +505,7 @@ void Player::PlayAnimation()
 
 void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 {
-	(void)clipName;
+	
 	//キーの名前が「attack_start」の時。
 	if (wcscmp(eventName, L"attack_start") == 0) {
 		//攻撃中にする。

@@ -35,8 +35,7 @@ bool FireBall::Start()
 
 void FireBall::Update()
 {
-	//座標を移動させる。
-	m_position += m_moveSpeed * g_gameTime->GetFrameDeltaTime();
+	
 
 
 	//タイマーを加算する。
