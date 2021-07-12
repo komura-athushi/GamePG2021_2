@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="jp">
+    <head>
+        <title>
+            Action_07
+        </title>
+        <meta charset="UTF-8">    
+    </head>
+
+    <body>
+        <h1>
+            <a href="index.html">トップ</a>
+        </h1>
+
+        <h1>
+            Action_07 魔法攻撃の実装＿後篇
+        </h1>
+
+       <ul>
+        <li>
+            <h2>
+                <p>8.1 エネミーの当たり判定</p>
+            </h2>
+        </li>
+        <p>
+            Action_06で、魔法攻撃の当たり判定を実装しました。次に、エネミー側の当たり判定を実装しましょう。
+            <br>では、Enemy.cppのCollision関数に下記のコードを追加してください。
+            <p>
+                Enemy.cpp
+            </p>
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+void Enemy::Collision()
+{
+    //被ダメージ、あるいはダウンステートの時は。
+    //当たり判定処理はしない。
+    if (m_enemyState == enEnemyState_ReceiveDamage ||
+    m_enemyState == enEnemyState_Down)
+    {
+        return;
+    }
+                        
+    //プレイヤーの攻撃用のコリジョンを取得する。
+    const auto& collisions = g_collisionObjectManager->FindCollisionObjects("player_attack");
+    //コリジョンの配列をfor文で回す。
+    for (auto collision : collisions)
+    {
+        //コリジョンとキャラコンが衝突したら。
+        if (collision->IsHit(m_charaCon))
+        {
+            //HPを1減らす。
+            m_hp -= 1;
+                        
+            //もしHPが0より上なら。
+            if (m_hp > 0)
+            {
+                //被ダメージステートに遷移する。
+                m_enemyState = enEnemyState_ReceiveDamage;
+            }
+            //HPが0なら。
+            else if (m_hp == 0)
+            {
+                //ダウンステートに遷移する。
+                m_enemyState = enEnemyState_Down;
+            }
+            
+            //効果音を再生する。
+            SoundSource* se = NewGO<SoundSource>(0);
+            se->Init(4);
+            se->Play(false);
+            se->SetVolume(0.4f);
+            return;
+        }	
+    }
+    
+    <font color="red">//プレイヤーのファイヤーボール用のコリジョンを取得する。
+    const auto& collisions2 = g_collisionObjectManager->FindCollisionObjects("player_fireball");
+    //for文で配列を回す。
+    for (auto collision : collisions2)
+    {
+        //コリジョンとキャラコンが衝突したら。
+        if (collision->IsHit(m_charaCon))
+        {
+            //HPを1減らす。
+            m_hp -= 1;
+            //HPが0になったら。
+            if (m_hp == 0)
+            {
+                //ダウンステートに遷移する。
+                m_enemyState = enEnemyState_Down;
+            }
+            else {
+                //被ダメージステートに遷移する。
+                m_enemyState = enEnemyState_ReceiveDamage;
+            }
+            //効果音を再生する。
+            SoundSource* se = NewGO<SoundSource>(0);
+            se->Init(4);
+            se->Play(false);
+            se->SetVolume(0.6f);
+            return;
+        }
+    }</font>
+}
+                    </div>
+                </font>
+                </code></pre>
+                出来たら、F5キーで実行してみましょう。魔法攻撃でエネミーがダメージを受けるようになったと思います。
+            </p>
+                <li>
+                    <h2>
+                        <p>8.2 エフェクト</p>
+                    </h2>
+                </li>
+                <p>
+                    では、最後に魔法攻撃の火の玉エフェクトを実装して、魔法攻撃の実装を終わりにしたいと思います。
+                    まず、FireBall.hに下記のコードを追加してください。
+                    <pre><code>
+                        <div style="background-color: silver; padding: 4px;">
+                            <font size="5" color="black">
+#pragma once
+
+//クラス宣言。
+class CollisionObject;
+<font color="red">class EffectEmitter;</font>
+
+/// &lt;summary&gt;
+/// ファイヤーボール。
+/// &lt;summary&gt;
+class FireBall : public IGameObject
+{
+public:
+                .
+                .
+                .
+    CollisionObject*            m_collisionObject = nullptr;            //CollisionObject。
+    <font color="red">EffectEmitter*              m_effectEmitter = nullptr;              //EffectEmitter。</font>
+};
+                            </div>
+                        </font>
+                        </code></pre>
+                        次に、FireBall.cppに下記のコードを追加してください。
+                        <p>
+                            FireBall.cpp
+                        </p>
+                        <pre><code>
+                            <div style="background-color: silver; padding: 4px;">
+                                <font size="5" color="black">
+#include "stdafx.h"
+#include "FireBall.h"
+
+#include "sound/SoundEngine.h"
+#include "sound/SoundSource.h"
+
+//CollisionObjectを使用したいので、ファイルをインクルードする。
+#include "collision/CollisionObject.h"
+
+<font color="red">//EffectEmitterを使用したいので、ファイルをインクルードする。
+#include "graphics/effect/EffectEmitter.h"</font>
+
+FireBall::FireBall()
+{
+    
+}
+
+FireBall::~FireBall()
+{
+    //コリジョンオブジェクトを削除する。
+    DeleteGO(m_collisionObject);
+    <font color="red">//エフェクトの再生を停止する。
+    m_effectEmitter->Stop();
+    //エフェクトを削除する。
+    DeleteGO(m_effectEmitter);</font>
+}
+
+bool FireBall::Start()
+{
+                .
+                .
+                .
+    //コリジョンオブジェクトが自動で削除されないようにする。
+    m_collisionObject->SetIsEnableAutoDelete(false);
+
+    <font color="red">//エフェクトのオブジェクトを作成する。
+    m_effectEmitter = NewGO<EffectEmitter>(0);
+    m_effectEmitter->Init(0);
+    //エフェクトの大きさを指定する。
+    m_effectEmitter->SetScale(Vector3::One * 20.0f);
+    //エフェクトの座標を設定する。
+    m_effectEmitter->SetPosition(m_position);
+    //エフェクトを再生する。
+    m_effectEmitter->Play();</font>
+    return true;
+}
+                                </div>
+                            </font>
+                            </code></pre> 
+                            出来たら、F5キーで実行してみましょう。攻撃時にエフェクトが発生していると思います。
+                            <br>しかし、通常攻撃と同じく、エフェクトの向きが不自然ですね？なので、エフェクトに回転を設定しましょう。
+                            <br><img src="sprite/action8/1.png" width="669" height="530" alt="ダイワスカーレットをすこれ">
+                            <br>以下のコードをFireBall.cppのStart関数に追加してください。
+                            <p>
+                                FireBall.cpp
+                            </p>
+                            <pre><code>
+                                <div style="background-color: silver; padding: 4px;">
+                                    <font size="5" color="black">
+bool FireBall::Start()
+{
+                .
+                .
+                .
+    //エフェクトを再生する。
+    m_effectEmitter->Play();
+    <font color="red">//エフェクトの回転を設定する。
+    m_effectEmitter->SetRotation(m_rotation);</font>
+    return true;
+} 
+                                    </div>
+                                </font>
+                                </code></pre> 
+                                出来たら、Fキーで実行してみましょう。攻撃エフェクトがプレイヤーの向きと同じになったと思います。
+                                <br><img src="sprite/action8/2.png" width="544" height="519" alt="ダイワスカーレットをすこれ">
+                                <br>では、最後にエフェクトを移動させて魔法攻撃の実装を締めくくりたいと思います。
+                                <p>
+                                    FireBall.cpp
+                                </p>
+                                <pre><code>
+                                    <div style="background-color: silver; padding: 4px;">
+                                        <font size="5" color="black">
+void FireBall::Update()
+{
+    //座標を移動させる。
+    m_position += m_moveSpeed * g_gameTime->GetFrameDeltaTime();
+    //コリジョンオブジェクトに座標を設定する。
+    m_collisionObject->SetPosition(m_position);
+    <font color="red">//エフェクトに座標を設定する。
+    m_effectEmitter->SetPosition(m_position);</font>
+            .
+            .
+            .
+}                                   
+                                    </div>
+                                </font>
+                                </code></pre>
+                                出来たら、F5キーで実行してみましょう。エフェクトが移動するようになったと思います。
+                                <br><img src="sprite/action8/3.png" width="540" height="528" alt="ダイワスカーレットをすこれ">
+                </p>  
+
+                <p>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeJKe321lTg562JQ97bDooRQxgrNvvtrntZ7Oa24-hsz7pw1w/viewform">評価テストの回答をお願いします。</a>
+                </p>
+        
+
+
+    </ul>
+
+</body>
+
+</html>
