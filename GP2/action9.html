@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html lang="jp">
+    <head>
+        <title>
+            Action_08
+        </title>
+        <meta charset="UTF-8">    
+    </head>
+
+    <body>
+        <h1>
+            <a href="index.html">トップ</a>
+        </h1>
+
+        <h1>
+            Action_08 エネミーの実装＿前編
+        </h1>
+
+       <ul>
+        <li>
+            <h2>
+                <p>9.1 エネミーの行動</p>
+            </h2>
+        </li>
+        <p>
+            最後に、エネミーの実装をしていきましょう。
+            このゲームのエネミーの主な行動は以下の通りです。
+            <br><img src="sprite/action9/1.png" width="1000" height="1000" alt="ダイワスカーレットをすこれ">
+            <br><img src="sprite/action9/2.png" width="1000" height="1000" alt="ダイワスカーレットをすこれ">
+            <br><img src="sprite/action9/3.png" width="500" height="500" alt="ダイワスカーレットをすこれ">
+            <p>
+                このゲームのオブジェクトは「ステート」によって、処理を管理していると話しました。
+                <br>エネミーにもステートがあり、このステートを遷移させることによって、エネミーの行動を制御していきたいと思います。
+                <br><img src="sprite/action9/5.png" width="738" height="260" alt="ダイワスカーレットをすこれ">
+                <br>ステートを遷移させる処理については、Enemyの「ProcessCommonStateTransition関数」に記述していきます。今はまだ、この通り何も記述されていません。
+                <br><img src="sprite/action9/4.png" width="626" height="122" alt="ダイワスカーレットをすこれ">
+                <br>また、「通常攻撃」、「魔法攻撃」、「追跡」、「プレイヤーの発見」などの処理も実装されていないので、追加していきましょう。
+            </p>
+        </p>
+        <li>
+            <h2>
+                <p>9.2 ステート遷移</p>
+            </h2>
+            <p>
+                ではまず、ステートを遷移する処理から実装していきましょう。
+                まず、エネミーがプレイヤーを発見したら、追跡or魔法攻撃をするようにしてみましょう。
+                では、Enemy.cppのProcessCommonStateTransition関数に下記のコードを追加してください。
+                <p>
+                    Enemy.cpp
+                </p>
+                <pre><code>
+                    <div style="background-color: silver; padding: 4px;">
+                        <font size="5" color="black">
+void Enemy::ProcessCommonStateTransition()
+{
+    <font color="red">//各タイマーを初期化。
+    //待機時間と追跡時間を制限するため。
+    m_idleTimer = 0.0f;
+    m_chaseTimer = 0.0f;
+                            
+    //プレイヤーを見つけたら。
+    if (SearchPlayer() == true)
+    {
+        //乱数によって、追跡させるか魔法攻撃をするか決定する。	
+        int ram = rand() % 100;
+        //乱数が40以上なら。
+        if (ram > 40)
+        {
+            //追跡ステートに遷移する。
+            m_enemyState = enEnemyState_Chase;
+            return;
+        }
+        //乱数が40未満なら。
+        else {
+            //魔法攻撃ステートに遷移する。
+            m_enemyState = enEnemyState_MagicAttack;
+            return;
+        }
+    }</font>
+}
+                        </div>
+                    </font>
+                    </code></pre>
+                    出来たら、F5キーで実行してみてください。しかし、エネミーの行動には何も変化は無かったと思います。
+                    <br>先ほど追加した「SearchPlayer関数」が未実装のためです。
+                    <br>次に、この「SearchPlayer関数」を実装していきましょう。
+                    <ul>
+                        <li>
+                            <h3>
+                                9.2.1 視野角
+                            </h3>
+                        </li>
+                        エネミー側のプレイヤー発見の処理には、「距離」と「視野角」を使用します。
+                        「距離」については単純で、プレイヤーとエネミーの距離が近いかどうかを判断します。
+                        「視野角」については、エネミーの視界にプレイヤーが居るかどうかを判断する際に使用します。
+
+                    </ul>
+            </p>
+        </li>
+    </ul>
+
+</body>
+
+</html>
