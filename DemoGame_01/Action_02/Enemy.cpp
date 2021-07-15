@@ -150,7 +150,7 @@ void Enemy::Attack()
 
 const bool Enemy::SearchPlayer() const
 {
-	return true;
+	return false;
 }
 
 void Enemy::MakeAttackCollision()
