@@ -220,6 +220,27 @@ void Enemy::Attack()
 
 const bool Enemy::SearchPlayer() const
 {
+	//エネミーからプレイヤーに向かうベクトルを求める。
+	Vector3 diff = m_player->GetPosition() - m_position;
+
+	//プレイヤーにある程度近かったら。
+	if (diff.LengthSq() <= 700.0 * 700.0f)
+	{
+		//エネミーからプレイヤーに向かうベクトルを正規化(大きさを1)する。
+		diff.Normalize();
+		//エネミーの正面のベクトルと、エネミーからプレイヤーに向かうベクトルの。
+		//内積(cosθ)を求める。
+		float cos = m_forward.Dot(diff);
+		//内積(cosθ)から角度(θ)を求める。
+		float angle = acosf(cos);
+		//角度(θ)が120°(視野角)より小さければ。
+		if (angle <= (Math::PI / 180.0f) * 120.0f)
+		{
+			//プレイヤーを見つけた！
+			return true;
+		}
+	}
+	//プレイヤーを見つけられなかった。
 	return false;
 }
 

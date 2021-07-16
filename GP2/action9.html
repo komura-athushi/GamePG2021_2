@@ -101,6 +101,47 @@ void Enemy::ProcessCommonStateTransition()
                         <br><img src="sprite/action9/7.png" width="700" height="500" alt="ダイワスカーレットをすこれ">
                         <br><font color="red">「エネミーの正面ベクトル」と「エネミーからプレイヤーに向けたベクトル」の角度が</font>が、<font color="red">設定した視野角より小</font>さければプレイヤーが視界内に居ると判断します。
                         <br><img src="sprite/action9/8.png" width="700" height="1000" alt="ダイワスカーレットをすこれ">
+                        <p>
+                            それでは実際にコードを追加していきましょう。
+                            <br>では、Enemy.cppのSearchPlayer関数に下記のコードを追加してください。
+                            <p>
+                                Enemy.cpp
+                            </p>
+                            <pre><code>
+                                <div style="background-color: silver; padding: 4px;">
+                                    <font size="5" color="black">
+const bool Enemy::SearchPlayer() const
+{
+    <font color="red">//エネミーからプレイヤーに向かうベクトルを求める。
+    Vector3 diff = m_player->GetPosition() - m_position;
+                                        
+    //プレイヤーにある程度近かったら。
+    if (diff.LengthSq() <= 700.0 * 700.0f)
+    {
+        //エネミーからプレイヤーに向かうベクトルを正規化(大きさを1)する。
+        diff.Normalize();        
+        //エネミーの正面のベクトルと、エネミーからプレイヤーに向かうベクトルの。
+        //内積(cosθ)を求める。
+        float cos = m_forward.Dot(diff);
+        //内積(cosθ)から角度(θ)を求める。
+        float angle = acosf(cos);
+        //角度(θ)が120°(視野角)より小さければ。
+        if (angle <= (Math::PI / 180.0f) * 120.0f)
+        {
+            //プレイヤーを見つけた！
+            return true;
+        }
+    }
+    //プレイヤーを見つけられなかった。
+    return false;</font>
+}
+                                    </div>
+                                </font>
+                                </code></pre>
+                                出来たら、F5キーで実行してみてください。
+                                <br>プレイヤーがエネミーの視界に入ると、エネミーが何かしらのアクションをするようになったと思います。
+                        </p>
+
                     </ul>
             </p>
         </li>
