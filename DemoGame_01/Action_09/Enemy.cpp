@@ -127,6 +127,18 @@ void Enemy::Chase()
 		return;
 	}
 
+	//エネミーを移動させる。
+	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
+	if (m_charaCon.IsOnGround()) {
+		//地面についた。
+		//重力を0にする。
+		m_moveSpeed.y = 0.0f;
+	}
+	Vector3 modelPosition = m_position;
+	//ちょっとだけモデルの座標を挙げる。
+	modelPosition.y += 2.5f;
+	//座標を設定する。
+	m_modelRender.SetPosition(modelPosition);
 }
 
 void Enemy::Collision()
@@ -261,24 +273,62 @@ void Enemy::ProcessCommonStateTransition()
 	m_idleTimer = 0.0f;
 	m_chaseTimer = 0.0f;
 
+	//エネミーからプレイヤーに向かうベクトルを計算する。
+	Vector3 diff = m_player->GetPosition() - m_position;
+
 	//プレイヤーを見つけたら。
 	if (SearchPlayer() == true)
 	{
-		//乱数によって、追跡させるか魔法攻撃をするか決定する。	
-		int ram = rand() % 100;
-		//乱数が40以上なら。
-		if (ram > 40)
+		//通常攻撃できない距離なら。
+		if (IsCanAttack() == false)
 		{
-			//追跡ステートに遷移する。
-			m_enemyState = enEnemyState_Chase;
-			return;
+			//ベクトルを正規化する。
+			diff.Normalize();
+			//移動速度を設定する。
+			m_moveSpeed = diff * 250.0f;
+			//乱数によって、追跡させるか魔法攻撃をするか決定する。	
+			int ram = rand() % 100;
+			//乱数が40以上なら。
+			if (ram > 40)
+			{
+				//追跡ステートに遷移する。
+				m_enemyState = enEnemyState_Chase;
+				return;
+			}
+			//乱数が40未満なら。
+			else {
+				//魔法攻撃ステートに遷移する。
+				m_enemyState = enEnemyState_MagicAttack;
+				return;
+			}
 		}
-		//乱数が40未満なら。
-		else {
-			//魔法攻撃ステートに遷移する。
-			m_enemyState = enEnemyState_MagicAttack;
-			return;
+		//攻撃できる距離なら。
+		else
+		{
+			//乱数によって、攻撃するか待機させるかを決定する。	
+			int ram = rand() % 100;
+			if (ram > 30)
+			{
+				//攻撃ステートに遷移する。
+				m_enemyState = enEnemyState_Attack;
+				m_isUnderAttack = false;
+				return;
+			}
+			else
+			{
+				//待機ステートに遷移する。
+				m_enemyState = enEnemyState_Idle;
+				return;
+			}
 		}
+	}
+	//プレイヤーを見つけられなければ。
+	else
+	{
+		//待機ステートに遷移する。
+		m_enemyState = enEnemyState_Idle;
+		return;
+
 	}
 }
 
@@ -454,7 +504,14 @@ void Enemy::PlayAnimation()
 
 const bool Enemy::IsCanAttack() const
 {
-
+	Vector3 diff = m_player->GetPosition() - m_position;
+	//エネミーとプレイヤーの距離が近かったら。
+	if (diff.LengthSq() <= 100.0f * 100.0f)
+	{
+		//攻撃できる！
+		return true;
+	}
+	//攻撃できない。
 	return false;
 }
 

@@ -62,29 +62,127 @@ void Enemy::ProcessCommonStateTransition()
     //プレイヤーを見つけたら。
     if (SearchPlayer() == true)
     {
-        //乱数によって、追跡させるか魔法攻撃をするか決定する。	
-        int ram = rand() % 100;
-        //乱数が40以上なら。
-        if (ram > 40)
+        //通常攻撃できない距離なら。
+        if (IsCanAttack() == false)
         {
-            //追跡ステートに遷移する。
-            m_enemyState = enEnemyState_Chase;
-            return;
+            //乱数によって、追跡させるか魔法攻撃をするか決定する。	
+            int ram = rand() % 100;
+            //乱数が40以上なら。
+            if (ram > 40)
+            {
+                //追跡ステートに遷移する。
+                m_enemyState = enEnemyState_Chase;
+                return;
+            }
+            //乱数が40未満なら。
+            else {
+                //魔法攻撃ステートに遷移する。
+                m_enemyState = enEnemyState_MagicAttack;
+                return;
+            }
         }
-        //乱数が40未満なら。
-        else {
-            //魔法攻撃ステートに遷移する。
-            m_enemyState = enEnemyState_MagicAttack;
-            return;
-        }
+    }
+    //プレイヤーを見つけられなければ。
+    else
+    {
+        //待機ステートに遷移する。
+        m_enemyState = enEnemyState_Idle;
+        return;
+    
     }</font>
 }
                         </div>
                     </font>
                     </code></pre>
+
+                   
+                        <br>次に、エネミーがプレイヤーの近くに居た時の処理を追加しましょう。
+                        <p>
+                            Enemy.cpp
+                        </p>
+                        <pre><code>
+                            <div style="background-color: silver; padding: 4px;">
+                                <font size="5" color="black">
+const bool Enemy::IsCanAttack() const
+{
+    <font color="red">Vector3 diff = m_player->GetPosition() - m_position;
+    //エネミーとプレイヤーの距離が近かったら。
+    if (diff.LengthSq() <= 100.0f * 100.0f)
+    {
+        //攻撃できる！
+        return true;
+    }
+    //攻撃できない。
+    return false;</font>
+}
+                .
+                .
+                .
+void Enemy::ProcessCommonStateTransition()
+{
+    //各タイマーを初期化。
+    //待機時間と追跡時間を制限するため。
+    m_idleTimer = 0.0f;
+    m_chaseTimer = 0.0f;
+                                                                
+    //プレイヤーを見つけたら。
+    if (SearchPlayer() == true)
+    {
+        //通常攻撃できない距離なら。
+        if (IsCanAttack() == false)
+        {
+            //乱数によって、追跡させるか魔法攻撃をするか決定する。	
+            int ram = rand() % 100;
+            //乱数が40以上なら。
+            if (ram > 40)
+            {
+                //追跡ステートに遷移する。
+                m_enemyState = enEnemyState_Chase;
+                return;
+            }
+            //乱数が40未満なら。
+            else {
+                //魔法攻撃ステートに遷移する。
+                m_enemyState = enEnemyState_MagicAttack;
+                return;
+            }
+        }
+        <font color="red">//攻撃できる距離なら。
+        else
+        {
+            //乱数によって、待機させるか通常攻撃をするか決定する。	
+            int ram = rand() % 100;
+            if (ram > 30)
+            {
+                //攻撃ステートに遷移する。
+                m_enemyState = enEnemyState_Attack;
+                return;
+            }
+            else 
+            {
+                //待機ステートに遷移する。
+                m_enemyState = enEnemyState_Idle;
+                return;
+            }
+        }</font>
+    }
+    //プレイヤーを見つけられなければ。
+    else
+    {
+        //待機ステートに遷移する。
+        m_enemyState = enEnemyState_Idle;
+        return;
+    }
+}
+                                </div>
+                            </font>
+                            </code></pre>   
+
+                    
                     出来たら、F5キーで実行してみてください。しかし、エネミーの行動には何も変化は無かったと思います。
                     <br>先ほど追加した「SearchPlayer関数」が未実装のためです。
                     <br>次に、この「SearchPlayer関数」を実装していきましょう。
+                </p>
                     <ul>
                         <li>
                             <h3>
@@ -97,7 +195,7 @@ void Enemy::ProcessCommonStateTransition()
                         <br><img src="sprite/action9/6.png" width="700" height="1000" alt="ダイワスカーレットをすこれ">
                         <br>では、どのようにしてエネミーの視界にプレイヤーが居るかどうかを判定するのでしょうか？
                         <br>答えは、「ベクトルの内積を利用する」です。
-                        <br>ベクトルの内積から、ベクトル間の角度θを求めることが出来ます。
+                        <br><font color="red">ベクトルの内積から、ベクトル間の角度θを求めることが出来</font>ます。
                         <br><img src="sprite/action9/7.png" width="700" height="500" alt="ダイワスカーレットをすこれ">
                         <br><font color="red">「エネミーの正面ベクトル」と「エネミーからプレイヤーに向けたベクトル」の角度が</font>が、<font color="red">設定した視野角より小</font>さければプレイヤーが視界内に居ると判断します。
                         <br><img src="sprite/action9/8.png" width="700" height="1000" alt="ダイワスカーレットをすこれ">
@@ -141,12 +239,85 @@ const bool Enemy::SearchPlayer() const
                                 出来たら、F5キーで実行してみてください。
                                 <br>プレイヤーがエネミーの視界に入ると、エネミーが何かしらのアクションをするようになったと思います。
                         </p>
+                        <li>
+                            <h3>
+                                9.2.2 追跡
+                            </h3>
+                        </li>
+                        <p>
+                            次に、エネミーの追跡処理を追加していきましょう。
+                            <br>エネミーをプレイヤーに追跡させるには、「エネミーからプレイヤーに向かうベクトル」を使用します。
+                            <br><img src="sprite/action9/9.png" width="500" height="500" alt="ダイワスカーレットをすこれ">
+                            <br><img src="sprite/action9/10.png" width="500" height="500" alt="ダイワスカーレットをすこれ">
+                            <br><img src="sprite/action9/11.png" width="500" height="500" alt="ダイワスカーレットをすこれ">4
+                            <p>
+                                それでは、エネミーに追跡処理を追加していきましょう。
+                                Enemy.cppのProcessCommonStateTransition関数とChase関数に下記のコードを追加してください。
+                                <p>
+                                    Enemy.cpp
+                                </p>
+                                <pre><code>
+                                    <div style="background-color: silver; padding: 4px;">
+                                        <font size="5" color="black">
+void Enemy::Chase()
+{
+    //追跡ステートでないなら、追跡処理はしない。
+    if (m_enemyState != enEnemyState_Chase)
+    {
+        return;
+    }
+    
+    <font color="red">//エネミーを移動させる。
+    m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
+    if (m_charaCon.IsOnGround()) {
+        //地面についた。
+        //重力を0にする。
+        m_moveSpeed.y = 0.0f;
+    }
+    Vector3 modelPosition = m_position;
+    //ちょっとだけモデルの座標を挙げる。
+    modelPosition.y += 2.5f;
+    //座標を設定する。
+    m_modelRender.SetPosition(modelPosition);</font>
+}
+                .
+                .
+                .
+void Enemy::ProcessCommonStateTransition()
+{
+    //各タイマーを初期化。
+    //待機時間と追跡時間を制限するため。
+    m_idleTimer = 0.0f;
+    m_chaseTimer = 0.0f;
+                
+    <font color="red">//エネミーからプレイヤーに向かうベクトルを計算する。
+    Vector3 diff = m_player->GetPosition() - m_position;</font>
+                
+    //プレイヤーを見つけたら。
+    if (SearchPlayer() == true)
+    {
+        <font color="red">//ベクトルを正規化する。
+        diff.Normalize();
+        //移動速度を設定する。
+        m_moveSpeed = diff * 250.0f;</font>
+        //乱数によって、追跡させるか魔法攻撃をするか決定する。	
+        int ram = rand() % 100;
+                    .
+                    .
+                    .
 
+                                        </div>
+                                    </font>
+                                    </code></pre>
+                            </p>
+                        </p>
                     </ul>
-            </p>
         </li>
+        <p>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGwMYe4C8CbfZf6WXR43L2KQ0q33TC9A2hO0oGeRLpVY6bpQ/viewform">評価テストの回答をお願いします。</a>
+        </p>
     </ul>
-
+    
 </body>
 
 </html>

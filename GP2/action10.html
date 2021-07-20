@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+
+<html lang="jp">
+    <head>
+        <title>
+            Action_09
+        </title>
+        <meta charset="UTF-8">    
+    </head>
+
+    <body>
+        <h1>
+            <a href="index.html">トップ</a>
+        </h1>
+
+        <h1>
+            Action_09 エネミーの実装＿後編
+        </h1>
+
+       <ul>
+        <li>
+            <h2>
+                <p>10.1 エネミーの通常攻撃</p>
+            </h2>
+        </li>
+        <p>
+            Action9では、エネミーの「追跡」、「プレイヤーの発見」などの処理を実装しました。
+            <br>Action10では、「通常攻撃」、「魔法攻撃」を実装していきましょう。
+            <br>では、プレイヤーと同じようにエネミーの通常攻撃を実装していきましょう。
+            <br>まずは「アニメーションイベント」を追加しましょう。尚、エネミーのアニメーションファイルには、アニメーションが既に設定されています。
+            <br>では、Enemy.hに下記のコードを追加してください。
+            <p>
+                Enemy.h
+            </p>
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+class Enemy : public IGameObject
+{
+                .
+                .
+                .
+    /// &lt;summary&lt;
+    /// ダウンステートの遷移処理。
+    /// &lt;/summary&gt;
+    void ProcessDownStateTransition();
+    /// &lt;summary&gt;
+    /// 攻撃できる距離かどうか調べる。
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;攻撃できるならtrue。&lt;/returns&gt;
+    const bool IsCanAttack() const;
+    <font color="red">/// &lt;summary&gt;
+    /// アニメーションイベント用の関数。
+    /// &lt;/summary&gt;
+    /// &lt;param name="clipName"&gt;アニメーションの名前。&lt;/param&gt;
+    /// &lt;param name="eventName"&gt;アニメーションイベントのキーの名前。&lt;/param&gt;
+    void OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName);</font>
+
+
+    enum EnAnimationClip {
+                .
+                .
+                .
+}
+                    </div>
+                </font>
+                </code></pre>
+                <p>
+                    次に、Enemy.cppに下記のコードを追加してください。
+                </p>
+                <p>
+                    Enemy.cpp
+                </p>
+                <pre><code>
+                    <div style="background-color: silver; padding: 4px;">
+                        <font size="5" color="black">
+                .
+                .
+                .                            
+bool Enemy::Start()
+{
+                .
+                .
+                .
+    <font color="red">//アニメーションイベント用の関数を設定する。
+    m_modelRender
+    m_modelRender.AddAnimationEvent([&](const wchar_t* clipName, const wchar_t* eventName) {
+        OnAnimationEvent(clipName, eventName);
+    });</font>
+    return true;
+}
+                .
+                .
+                .
+<font color="red">void Enemy::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
+{
+    //キーの名前が「attack_start」の時。
+    if (wcscmp(eventName, L"attack_start") == 0) {
+        //攻撃中判定をtrueにする。
+        m_isUnderAttack = true;
+        //効果音を再生する。
+        SoundSource* se = NewGO&lt;SoundSource&gt;(0);
+        se->Init(3);
+        se->Play(false);
+        se->SetVolume(0.8f);
+    }
+    //キーの名前が「attack_end」の時。
+    else if (wcscmp(eventName, L"attack_end") == 0) {
+        //攻撃中判定をfalseにする。
+        m_isUnderAttack = false;
+    }
+    //キーの名前が「magic_attack」の時。
+    else if (wcscmp(eventName, L"magic_attack") == 0) {
+        //ファイヤーボールのオブジェクトを作成する。
+        MakeFireBall();
+    }
+}</font>
+                        </div>
+                    </font>
+                    </code></pre>
+                    <p>
+                        次に、通常攻撃エフェクトを実装しましょう。
+                        では、Enemy.cppに下記のコードを追加してください。
+                    </p>
+                    <p>
+                        Enemy.cpp
+                    </p>
+                    <pre><code>
+                        <div style="background-color: silver; padding: 4px;">
+                            <font size="5" color="black">
+                .
+                .
+                .
+//CollisionObjectを使用したいため、ファイルをインクルードする。
+#include "collision/CollisionObject.h"
+                
+<font color="red">//EffectEmitterを使用したいため、ファイルをインクルードする。
+#include "graphics/effect/EffectEmitter.h"</font>
+                .
+                .
+                .
+bool Enemy::Start()
+{
+                .
+                .
+                .
+    //アニメーションイベント用の関数を設定する。
+    m_modelRender.AddAnimationEvent([&](const wchar_t* clipName, const wchar_t* eventName) {
+        OnAnimationEvent(clipName, eventName);
+    });
+
+    <font color="red">//エフェクトを読み込む。
+    EffectEngine::GetInstance()->ResistEffect(1, u"Assets/effect/efk/enemy_slash_01.efk");</font>
+
+    return true;
+}
+                .
+                .
+                .
+void Enemy::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
+{
+    //キーの名前が「attack_start」の時。
+    if(wcscmp(eventName, L"attack_start") == 0)
+    {
+        //攻撃中判定をtrueにする。
+        m_isUnderAttack = true;
+        //効果音を再生する。
+        SoundSource* se = NewGO&lt;SoundSource&gt;(0);
+        se->Init(3);
+        se->Play(false);
+        se->SetVolume(0.8f);
+
+        <font color="red">//攻撃エフェクトを発生させる。
+        EffectEmitter* effectEmitter = NewGO&lt;EffectEmitter&gt;(0);
+        effectEmitter->Init(1);
+        //大きさを設定する。
+        effectEmitter->SetScale(Vector3::One * 12.0f);
+        Vector3 effectPosition = m_position;
+        //座標を少し上にする。
+        effectPosition.y += 70.0f;
+        //座標を設定する。
+        effectEmitter->SetPosition(effectPosition);
+        Quaternion rotation;
+        rotation = m_rotation;
+        rotation.AddRotationDegY(360.0f);
+        //回転を設定する。
+        effectEmitter->SetRotation(rotation);
+        //エフェクトを再生する。
+        effectEmitter->Play();</font>
+    }
+                .
+                .
+                .
+}
+                            </div>
+                        </font>
+                        </code></pre>
+                        <p>
+                            出来たら、F5キーで実行してみてください。エネミーの通常攻撃時に、エフェクトが発生しているでしょうか。
+                            <br>次に、通常攻撃に当たり判定を追加しましょう。
+                            <br>まず、Enemy.hに下記のコードを追加してください。
+                            <p>
+                                Enemy.h
+                            </p>
+                            <pre><code>
+                                <div style="background-color: silver; padding: 4px;">
+                                    <font size="5" color="black">
+class Enemy : public IGameObject
+{
+                .
+                .
+                .
+    float           m_chaseTimer = 0.0f;                //追跡タイマー。                
+    float           m_idleTimer = 0.0f                  //待機タイマー。
+    <font color="red">int             m_swordBoneId = -1;                 //剣のボーンのID。</font>
+}
+                                    </div>
+                                </font>
+                                </code></pre>
+                                次に、Enemy.cppに下記のコードを追加してください。
+                                <p>
+                                    Enemy.cpp
+                                </p>
+                                <pre><code>
+                                    <div style="background-color: silver; padding: 4px;">
+                                        <font size="5" color="black">
+bool Enemy::Start()
+{
+                .
+                .
+                .
+    //エフェクトを読み込む。
+    EffectEngine::GetInstance()->ResistEffect(1, u"Assets/effect/efk/enemy_slash_01.efk");
+    
+    <font color="red">//剣のボーンのIDを取得する。
+    m_swordBoneId = m_modelRender.FindBoneID(L"Sword");</font>
+    return true;
+}
+                .
+                .
+                .
+void Enemy::MakeAttackCollision()
+{
+    <font color="red">//攻撃当たり判定用のコリジョンオブジェクトを作成する。
+    auto collisionObject = NewGO&lt;CollisionObject&gt;(0);
+    //剣のボーンのワールド行列を取得する。
+    Matrix matrix = m_modelRender.GetBone(m_swordBoneId)->GetWorldMatrix();
+    //ボックス状のコリジョンを作成する。
+    collisionObject->CreateBox(m_position, Quaternion::Identity, Vector3(100.0f, 10.0f, 10.0f));
+    collisionObject->SetWorldMatrix(matrix);
+    collisionObject->SetName("enemy_attack");</font>
+}
+                                        </div>
+                                    </font>
+                                    </code></pre>
+                                    出来たら、「ソリューション構成」を「Debug」にしてF5キーで実行してみてください。
+                                    <br>敵の通常攻撃に、当たり判定が作成されているでしょうか？
+                                    <br><img src="sprite/action10/1.png" width="660" height="500" alt="ダイワスカーレットをすこれ">
+                                    <p>
+                                        次に、プレイヤー側の当たり判定を追加しましょう。
+                                        <br>Player.cppnのCollision関数に下記のコードを追加してください。
+                                    </p>
+                                    <p>
+                                        Player.cpp
+                                    </p>
+                                    <pre><code>
+                                        <div style="background-color: silver; padding: 4px;">
+                                            <font size="5" color="black">
+void Player::Collision()
+{
+    //被ダメージ、ダウン中、クリア時はダメージ判定をしない。
+    if (m_playerState == enPlayerState_ReceiveDamage ||
+    m_playerState == enPlayerState_Down ||
+    m_playerState == enPlayerState_Clear)
+    {
+        return;
+    }
+                                            
+    <font color="red">//敵の攻撃用のコリジョンの配列を取得する。
+    const auto& collisions = g_collisionObjectManager->FindCollisionObjects("enemy_attack");
+    //配列をfor文で回す。
+    for (auto collision : collisions)
+    {
+        //コリジョンとキャラコンが衝突したら。
+        if (collision->IsHit(m_charaCon))
+        {
+            //HPを減らす。
+            m_hp -= 1;
+            //HPが0になったら。
+            if (m_hp == 0)
+            {
+                //ダウンさせる。
+                m_playerState = enPlayerState_Down;
+            }
+            //HPが0ではなかったら。
+            else 
+            {
+                //被ダメージリアクションをさせる。
+                m_playerState = enPlayerState_ReceiveDamage;
+            }
+            //効果音を再生する。
+            SoundSource* se = NewGO&lt;SoundSource&gt;(0);
+            se->Init(7);
+            se->Play(false);
+            se->SetVolume(0.7f);
+            return;
+        }
+    }</font>
+}
+                                            </div>
+                                        </font>
+                                        </code></pre>
+                                        <p>
+                                            出来たら、F5キーで実行してみてください。エネミーの通報攻撃でプレイヤーがダメージを受けるようになったでしょうか？
+                                        </p>
+                        </p>
+
+
+        </p>
+
+        <li>
+            <h2>
+                <p>10.2 エネミーの魔法攻撃</p>
+            </h2>
+        </li>
+        <p>
+            続いて、エネミーの魔法攻撃を実装していきましょう。
+            <br>では、Enemy.cppのMakeFireBall関数に下記のコードを追加してください。
+        </p>
+        <p>
+            Enemy.cpp
+        </p>
+        <pre><code>
+            <div style="background-color: silver; padding: 4px;">
+                <font size="5" color="black">
+void Enemy::MakeFireBall()
+{
+    <font color="red">//ファイヤーボールのオブジェクトを作成する。
+    FireBall* fireBall = NewGO&lt;FireBall&gt;(0);
+    Vector3 fireBallPosition = m_position;
+    //座標を少し上にする。
+    fireBallPosition.y += 70.0f;
+    //座標を設定する。
+    fireBall->SetPosition(fireBallPosition);
+    //回転を設定する。
+    fireBall->SetRotation(m_rotation);
+    //術者をエネミーに設定する。
+    fireBall->SetEnMagician(FireBall::enMagician_Enemy);</font>
+}
+                </div>
+            </font>
+            </code></pre>
+            出来たら、F5キーで実行してみてください。エネミーが魔法攻撃をするようになったと思います。
+            <br>次に、プレイヤー側の当たり判定を追加しましょう。
+            <br>では、Player.cppのCollision関数に下記のコードを追加してください。
+            <p>
+                Player.cpp
+            </p>
+            <pre><code>
+                <div style="background-color: silver; padding: 4px;">
+                    <font size="5" color="black">
+void Player::Collision()
+{
+    //被ダメージ、ダウン中、クリア時はダメージ判定をしない。
+    if (m_playerState == enPlayerState_ReceiveDamage ||
+    m_playerState == enPlayerState_Down ||
+    m_playerState == enPlayerState_Clear)
+    {
+        return;
+    }
+                                                                    
+    //敵の攻撃用のコリジョンの配列を取得する。
+    const auto& collisions = g_collisionObjectManager->FindCollisionObjects("enemy_attack");
+    //配列をfor文で回す。
+    for (auto collision : collisions)
+    {
+        //コリジョンとキャラコンが衝突したら。
+        if (collision->IsHit(m_charaCon))
+        {
+            //HPを減らす。
+            m_hp -= 1;
+            //HPが0になったら。
+            if (m_hp == 0)
+            {
+                //ダウンさせる。
+                m_playerState = enPlayerState_Down;
+            }
+            //HPが0ではなかったら。
+            else 
+            {
+                //被ダメージリアクションをさせる。
+                m_playerState = enPlayerState_ReceiveDamage;
+            }
+            //効果音を再生する。
+            SoundSource* se = NewGO&lt;SoundSource&gt;(0);
+            se->Init(7);
+            se->Play(false);
+            se->SetVolume(0.7f);
+            return;
+        }
+    }
+    
+    <font color="red">//敵の撃ったファイヤーボールのコリジョンの配列を取得する。
+    const auto& collisions2 = g_collisionObjectManager->FindCollisionObjects("enemy_fireball");
+    //配列をfor文で回す。
+    for (auto collision : collisions2)
+    {
+        //コリジョンとキャラコンが衝突したら。
+        if (collision->IsHit(m_charaCon))
+        {
+            //HPを減らす。
+            m_hp -= 1;
+            //HPが0になったら。
+            if (m_hp == 0)
+            {
+                //ダウンさせる。
+                m_playerState = enPlayerState_Down;
+            }
+            //HPが0ではなかったら。
+            else 
+            {
+                //被ダメージリアクションをさせる。
+                m_playerState = enPlayerState_ReceiveDamage;
+            }
+            //効果音を再生する。
+            SoundSource* se = NewGO&lt;SoundSource&gt;(0);
+            se->Init(7);
+            se->Play(false);
+            se->SetVolume(0.7f);
+            return;
+        }
+    }</font>
+}
+                    </div>
+                </font>
+                </code></pre>
+                出来たら、F5キーで実行してみてください。エネミーの魔法攻撃でプレイヤーがダメージを受けるようになったと思います。
+
+
+                <p>
+                    最後に、Game.cppに色々なオブジェクトを削除するコードを追加してください。
+                    <br>ゲームオーバーやゲームクリアになった際にエラーが起きているのは、オブジェクトを削除していないからです。
+                </p>
+                <p>
+                    Game.cpp
+                </p>
+                <pre><code>
+                    <div style="background-color: silver; padding: 4px;">
+                        <font size="5" color="black">
+Game::~Game()
+{
+    //色々なオブジェクトを削除する。
+    DeleteGO(m_gameCamera);
+    DeleteGO(m_skyCube);
+    DeleteGO(m_player);
+    DeleteGO(m_background);
+    DeleteGO(m_bgm);
+    <font color="red">//レバーを削除。
+    for (auto lever : m_leverVector)
+    {
+        DeleteGO(lever);
+    }
+    //ドアを削除。
+    for (auto door : m_doorVector)
+    {
+        DeleteGO(door);
+    }
+    //エネミーを削除。
+    const auto& enemys = FindGOs&lt;Enemy&gt;("enemy");
+    for (auto enemy : enemys)
+    {
+        DeleteGO(enemy);
+    }
+    //ボスを削除。
+    DeleteGO(FindGO&lt;Boss&gt;("boss"));</font>
+}
+                        </div>
+                    </font>
+                    </code></pre>
+                    以上でゲームプログラミング2は終了です、お疲れ様でした。
+
+                    <p>
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScS47jf1rrTeUsvCcZnKdlNQ-txwxILSLnsYLNkQfHF1i80Wg/viewform">評価テストの回答をお願いします。</a>
+                    </p>
+    </ul>
+
+</body>
+
+</html>

@@ -134,14 +134,17 @@ void Enemy::Chase()
 		return;
 	}
 
+	//エネミーを移動させる。
 	m_position = m_charaCon.Execute(m_moveSpeed, g_gameTime->GetFrameDeltaTime());
 	if (m_charaCon.IsOnGround()) {
 		//地面についた。
+		//重力を0にする。
 		m_moveSpeed.y = 0.0f;
 	}
 	Vector3 modelPosition = m_position;
 	//ちょっとだけモデルの座標を挙げる。
 	modelPosition.y += 2.5f;
+	//座標を設定する。
 	m_modelRender.SetPosition(modelPosition);
 }
 

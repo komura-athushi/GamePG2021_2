@@ -67,7 +67,7 @@ void Enemy::Collision()
             }
             
             //効果音を再生する。
-            SoundSource* se = NewGO<SoundSource>(0);
+            SoundSource* se = NewGO&lt;SoundSource&gt;(0);
             se->Init(4);
             se->Play(false);
             se->SetVolume(0.4f);
@@ -96,7 +96,7 @@ void Enemy::Collision()
                 m_enemyState = enEnemyState_ReceiveDamage;
             }
             //効果音を再生する。
-            SoundSource* se = NewGO<SoundSource>(0);
+            SoundSource* se = NewGO&lt;SoundSource&gt;(0);
             se->Init(4);
             se->Play(false);
             se->SetVolume(0.6f);
@@ -184,7 +184,7 @@ bool FireBall::Start()
     m_collisionObject->SetIsEnableAutoDelete(false);
 
     <font color="red">//エフェクトのオブジェクトを作成する。
-    m_effectEmitter = NewGO<EffectEmitter>(0);
+    m_effectEmitter = NewGO&lt;EffectEmitter&gt;(0);
     m_effectEmitter->Init(0);
     //エフェクトの大きさを指定する。
     m_effectEmitter->SetScale(Vector3::One * 20.0f);
