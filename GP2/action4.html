@@ -167,13 +167,13 @@ public:
 void Player::OnAnimationEvent(const wchar_t* clipName, const wchar_t* eventName)
 {
     //キーの名前が「attack_start」の時。
-    if(wcscmp(eventName, L"attack_start"))
+    if(wcscmp(eventName, L"attack_start") == 0)
     {
         //攻撃中にする。
         m_isUnderAttack = true;
     }
     //キーの名前が「attack_end」の時。
-    else if(wcscmp(eventName, L"attack_end"))
+    else if(wcscmp(eventName, L"attack_end") == 0)
     {
         //攻撃を終わる。
         m_isUnderAttack = false;

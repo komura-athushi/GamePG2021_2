@@ -199,7 +199,7 @@ bool Lever::Start()
     m_modelRender.SetRotation(m_rotation);
     
     <font color="red">//コリジョンオブジェクトを作成する。
-    m_collisionObject = NewGO&lt;collisionObject&gt;(0);
+    m_collisionObject = NewGO&lt;CollisionObject&gt;(0);
     //ボックス状のコリジョンを作成。
     m_collisionObject->CreateBox(m_position,            //座標。
     m_rotation,                                         //回転。
