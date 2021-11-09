@@ -183,6 +183,8 @@ bool FireBall::Start()
     //コリジョンオブジェクトが自動で削除されないようにする。
     m_collisionObject->SetIsEnableAutoDelete(false);
 
+    //エフェクトを読み込む。
+    EffectEngine::GetInstance()->ResistEffect(0, u"Assets/effect/efk/magic_fire.efk");
     <font color="red">//エフェクトのオブジェクトを作成する。
     m_effectEmitter = NewGO&lt;EffectEmitter&gt;(0);
     m_effectEmitter->Init(0);
