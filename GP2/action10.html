@@ -83,7 +83,6 @@ bool Enemy::Start()
                 .
                 .
     <font color="red">//アニメーションイベント用の関数を設定する。
-    m_modelRender
     m_modelRender.AddAnimationEvent([&](const wchar_t* clipName, const wchar_t* eventName) {
         OnAnimationEvent(clipName, eventName);
     });</font>
